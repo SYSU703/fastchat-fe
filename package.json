@@ -14,9 +14,10 @@
     "vuex": "^3.0.1"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.0.0-beta.14",
-    "@vue/cli-plugin-typescript": "^3.0.0-beta.14",
-    "@vue/cli-service": "^3.0.0-beta.14",
+    "@vue/cli-plugin-babel": "^3.0.0-beta.15",
+    "@vue/cli-plugin-typescript": "^3.0.0-beta.15",
+    "@vue/cli-service": "^3.0.0-beta.15",
+    "@vue/eslint-config-typescript": "^3.0.0-beta.15",
     "eslint": "^4.19.1",
     "eslint-plugin-vue": "^4.5.0",
     "vue-template-compiler": "^2.5.16"

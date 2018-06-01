@@ -1,74 +1,74 @@
 <template>
-  <div class="layout">
-    <Layout>
-      <Header>
-        <Menu mode="horizontal"
-              theme="dark"
-              active-name="1">
-          <div class="layout-logo" />
-          <div class="layout-nav">
-            <MenuItem name="1">
-            <Icon type="ios-navigate" /> Item 1
-            </MenuItem>
-            <MenuItem name="2">
-            <Icon type="ios-keypad" /> Item 2
-            </MenuItem>
-            <MenuItem name="3">
-            <Icon type="ios-analytics" /> Item 3
-            </MenuItem>
-            <MenuItem name="4">
-            <Icon type="ios-paper" /> Item 4
-            </MenuItem>
-          </div>
-        </Menu>
-      </Header>
-      <Layout>
-        <Sider :style="{background: '#fff'}"
-               hide-trigger>
-          <Menu :open-names="['1']"
-                active-name="1-2"
-                theme="light"
-                width="auto">
-            <Submenu name="1">
-              <template slot="title">
-                <Icon type="ios-navigate" /> Item 1
-              </template>
-              <MenuItem name="1-1">Option 1</MenuItem>
-              <MenuItem name="1-2">Option 2</MenuItem>
-              <MenuItem name="1-3">Option 3</MenuItem>
-            </Submenu>
-            <Submenu name="2">
-              <template slot="title">
-                <Icon type="ios-keypad" /> Item 2
-              </template>
-              <MenuItem name="2-1">Option 1</MenuItem>
-              <MenuItem name="2-2">Option 2</MenuItem>
-            </Submenu>
-            <Submenu name="3">
-              <template slot="title">
-                <Icon type="ios-analytics" /> Item 3
-              </template>
-              <MenuItem name="3-1">Option 1</MenuItem>
-              <MenuItem name="3-2">Option 2</MenuItem>
-            </Submenu>
-          </Menu>
-        </Sider>
-        <Layout :style="{padding: '0 24px 24px'}">
-          <Breadcrumb :style="{margin: '24px 0'}">
-            <BreadcrumbItem>Home</BreadcrumbItem>
-            <BreadcrumbItem>Components</BreadcrumbItem>
-            <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb>
-          <Content :style="{padding: '24px', minHeight: '280px', background: '#fff'}">
-            Content
-          </Content>
-        </Layout>
-      </Layout>
-    </Layout>
-  </div>
+  <Form ref="formInline"
+        :model="formInline"
+        :rules="ruleInline"
+        inline>
+    <FormItem prop="user">
+      <Input type="text"
+             v-model="formInline.user"
+             placeholder="Username">
+      <Icon type="ios-person-outline"
+            slot="prepend" />
+      </Input>
+    </FormItem>
+    <FormItem prop="password">
+      <Input type="password"
+             v-model="formInline.password"
+             placeholder="Password">
+      <Icon type="ios-locked-outline"
+            slot="prepend" />
+      </Input>
+    </FormItem>
+    <FormItem>
+      <Button type="primary"
+              @click="handleSubmit('formInline')">Signin</Button>
+    </FormItem>
+  </Form>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-export default Vue.extend({});
+export default Vue.extend({
+  data() {
+    return {
+      formInline: {
+        user: '',
+        password: '',
+      },
+      ruleInline: {
+        user: [
+          {
+            required: true,
+            message: 'Please fill in the user name',
+            trigger: 'blur',
+          },
+        ],
+        password: [
+          {
+            required: true,
+            message: 'Please fill in the password.',
+            trigger: 'blur',
+          },
+          {
+            type: 'string',
+            min: 6,
+            message: 'The password length cannot be less than 6 bits',
+            trigger: 'blur',
+          },
+        ],
+      },
+    };
+  },
+  methods: {
+    handleSubmit(name: string) {
+      (this.$refs[name] as any).validate((valid: boolean) => {
+        if (valid) {
+          this.$Message.success('Success!');
+        } else {
+          this.$Message.error('Fail!');
+        }
+      });
+    },
+  },
+});
 </script>

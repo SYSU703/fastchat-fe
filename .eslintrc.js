@@ -5,7 +5,8 @@ module.exports = {
     },
     "extends": [
         "eslint:recommended",
-        "plugin:vue/recommended"
+        "plugin:vue/recommended",
+        "@vue/typescript"
     ],
     "parserOptions": {
         "sourceType": "module"
@@ -40,5 +41,6 @@ module.exports = {
                 "allowFirstLine": true
             }
         }],
+        "vue/attributes-order": ["off"],
     }
 };
