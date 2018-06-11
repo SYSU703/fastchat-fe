@@ -77,7 +77,19 @@ export default Vue.extend({
     handleSubmit() {
       (this.$refs.loginForm as any).validate((valid: boolean) => {
         if (valid) {
-          this.$Message.success('Success!');
+          this.$http
+            .post('http://localhost/users/login', {
+              userName: this.fields.userName,
+              password: this.fields.password,
+            })
+            .then(
+              (response: any) => {
+                this.$Message.success('Success!');
+              },
+              (err: Error) => {
+                this.$Message.error('Post fail!');
+              },
+            );
         } else {
           this.$Message.error('Fail!');
         }

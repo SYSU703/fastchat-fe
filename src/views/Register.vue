@@ -33,6 +33,15 @@
         </Input>
       </FormItem>
 
+      <FormItem prop="email">
+        <Input type="text"
+               v-model="fields.email"
+               placeholder="邮箱">
+        <Icon type="ios-email-outline"
+              slot="prepend" />
+        </Input>
+      </FormItem>
+
       <FormItem>
         <Button type="primary"
                 @click="handleSubmit()"
@@ -52,6 +61,7 @@ export default Vue.extend({
         userName: '',
         password: '',
         repeatPassword: '',
+        email: '',
       },
       validateRules: {
         userName: [
@@ -110,6 +120,18 @@ export default Vue.extend({
             trigger: 'blur',
           },
         ],
+        email: [
+          {
+            required: true,
+            message: '请输入邮箱',
+            trigger: 'blur',
+          },
+          {
+            type: 'email',
+            message: '请填写正确的邮箱',
+            trigger: 'blur',
+          },
+        ],
       },
     };
   },
@@ -117,7 +139,20 @@ export default Vue.extend({
     handleSubmit() {
       (this.$refs.registerForm as any).validate((valid: boolean) => {
         if (valid) {
-          this.$Message.success('Success!');
+          this.$http
+            .post('http://localhost/users/register', {
+              userName: this.fields.userName,
+              password: this.fields.password,
+              email: this.fields.email,
+            })
+            .then(
+              (response: any) => {
+                this.$Message.success('Success!');
+              },
+              (err: Error) => {
+                this.$Message.error('Post fail!');
+              },
+            );
         } else {
           this.$Message.error('Fail!');
         }
