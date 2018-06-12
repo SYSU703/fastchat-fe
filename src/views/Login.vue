@@ -42,6 +42,7 @@
 
 <script lang="ts">
 import Vue from 'vue';
+
 export default Vue.extend({
   data() {
     return {
@@ -75,23 +76,20 @@ export default Vue.extend({
   },
   methods: {
     handleSubmit() {
-      (this.$refs.loginForm as any).validate((valid: boolean) => {
+      (this.$refs.loginForm as any).validate(async (valid: boolean) => {
         if (valid) {
-          this.$http
-            .post('http://localhost/users/login', {
+          try {
+            const res = await this.$store.dispatch('login', {
               userName: this.fields.userName,
               password: this.fields.password,
-            })
-            .then(
-              (response: any) => {
-                this.$Message.success('Success!');
-              },
-              (err: Error) => {
-                this.$Message.error('Post fail!');
-              },
-            );
+            });
+            this.$Message.success('Success!');
+            this.$router.push({name: 'home'});
+          } catch (error) {
+            this.$Message.error('Fail!');
+          }
         } else {
-          this.$Message.error('Fail!');
+          this.$Message.error('Invalid!');
         }
       });
     },

@@ -11,7 +11,7 @@ export default {
 
   },
   mutations: {
-    changeUser(state, user: User | null) {
+    userChange(state, user: User | null) {
       if (user == null || typeof user !== 'object' || !user.userName) {
         state.currentUser = null;
       }
@@ -21,6 +21,7 @@ export default {
   actions: {
     async login({ state, commit }, credentials: LoginCredentials) {
       const res = await SessionRS.save(credentials);
+      commit('userChange', credentials);
       return res;
     },
   },
