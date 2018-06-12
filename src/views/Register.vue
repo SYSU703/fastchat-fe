@@ -54,6 +54,8 @@
 
 <script lang="ts">
 import Vue from 'vue';
+import { UserRS } from '@/resources';
+
 export default Vue.extend({
   data() {
     return {
@@ -137,24 +139,22 @@ export default Vue.extend({
   },
   methods: {
     handleSubmit() {
-      (this.$refs.registerForm as any).validate((valid: boolean) => {
+      (this.$refs.registerForm as any).validate(async (valid: boolean) => {
         if (valid) {
-          this.$http
-            .post('http://localhost/users/register', {
+          try {
+            const res = await UserRS.save({
               userName: this.fields.userName,
               password: this.fields.password,
               email: this.fields.email,
-            })
-            .then(
-              (response: any) => {
-                this.$Message.success('Success!');
-              },
-              (err: Error) => {
-                this.$Message.error('Post fail!');
-              },
-            );
+            });
+            console.log(res);
+            this.$Message.success('Success!');
+          } catch (error) {
+            console.log(error);
+            this.$Message.error('Fail!');
+          }
         } else {
-          this.$Message.error('Fail!');
+          this.$Message.error('Invalid!');
         }
       });
     },
