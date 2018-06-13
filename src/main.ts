@@ -4,8 +4,10 @@ import router from './router';
 import store from './store';
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
+import { FastChatSEAgent } from '@/serviceAgent/FastChatSEAgent';
 
 Vue.use(iView);
+Vue.use(new FastChatSEAgent());
 
 Vue.config.productionTip = false;
 

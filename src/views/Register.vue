@@ -3,43 +3,62 @@
     <h1 slot="title">注册</h1>
     <Form id="register-form"
           ref="registerForm"
+          label-position="top"
           :model="fields"
           :rules="validateRules">
 
-      <FormItem prop="userName">
+      <FormItem label="用户名"
+                prop="userName">
         <Input type="text"
                v-model="fields.userName"
-               placeholder="用户名">
-        <Icon type="ios-person-outline"
-              slot="prepend" />
+               placeholder="用户名用于登陆，不可重复">
         </Input>
       </FormItem>
 
-      <FormItem prop="password">
+      <FormItem label="昵称"
+                prop="nickname">
+        <Input type="text"
+               v-model="fields.nickname"
+               placeholder="昵称可以重复">
+        </Input>
+      </FormItem>
+
+      <FormItem label="密码"
+                prop="password">
         <Input type="password"
                v-model="fields.password"
-               placeholder="密码">
-        <Icon type="ios-locked-outline"
-              slot="prepend" />
+               placeholder="密码不应少于6个字符">
         </Input>
       </FormItem>
 
-      <FormItem prop="repeatPassword">
+      <FormItem label="重复密码"
+                prop="repeatPassword">
         <Input type="password"
                v-model="fields.repeatPassword"
                placeholder="再次输入密码">
-        <Icon type="ios-locked-outline"
-              slot="prepend" />
         </Input>
       </FormItem>
 
-      <FormItem prop="email">
+      <FormItem label="邮箱"
+                prop="email">
         <Input type="text"
                v-model="fields.email"
-               placeholder="邮箱">
-        <Icon type="ios-email-outline"
-              slot="prepend" />
+               placeholder="邮箱不可重复，用于找回密码">
         </Input>
+      </FormItem>
+
+      <FormItem label="性别"
+                prop="gender">
+        <RadioGroup v-model="fields.gender">
+          <Radio label="male">
+            <Icon type="man" />
+            <span>男</span>
+          </Radio>
+          <Radio label="female">
+            <Icon type="woman" />
+            <span>女</span>
+          </Radio>
+        </RadioGroup>
       </FormItem>
 
       <FormItem>
@@ -54,22 +73,30 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import { UserRS } from '@/resources';
 
 export default Vue.extend({
   data() {
     return {
       fields: {
         userName: '',
+        nickname: '',
         password: '',
         repeatPassword: '',
         email: '',
+        gender: 'male',
       },
       validateRules: {
         userName: [
           {
             required: true,
             message: '请输入用户名',
+            trigger: 'blur',
+          },
+        ],
+        nickname: [
+          {
+            required: true,
+            message: '请输入昵称',
             trigger: 'blur',
           },
         ],
@@ -134,6 +161,13 @@ export default Vue.extend({
             trigger: 'blur',
           },
         ],
+        gender: [
+          {
+            required: true,
+            message: '请选择性别',
+            trigger: 'change',
+          },
+        ],
       },
     };
   },
@@ -142,15 +176,17 @@ export default Vue.extend({
       (this.$refs.registerForm as any).validate(async (valid: boolean) => {
         if (valid) {
           try {
-            const res = await UserRS.save({
+            const res = await this.$serviceAgent.register({
               userName: this.fields.userName,
               password: this.fields.password,
               email: this.fields.email,
+              nickname: this.fields.nickname,
+              gender: this.fields.gender,
             });
-            console.log(res);
+            // console.log(res);
             this.$Message.success('Success!');
           } catch (error) {
-            console.log(error);
+            // console.log(error);
             this.$Message.error('Fail!');
           }
         } else {

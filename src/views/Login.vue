@@ -83,8 +83,9 @@ export default Vue.extend({
               userName: this.fields.userName,
               password: this.fields.password,
             });
+            // console.log(res);
             this.$Message.success('Success!');
-            this.$router.push({name: 'home'});
+            this.$router.push({ name: 'home' });
           } catch (error) {
             this.$Message.error('Fail!');
           }
