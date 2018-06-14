@@ -19,10 +19,10 @@ export abstract class ServiceAgent implements
     vue.serviceAgent = this;
     vue.prototype.$serviceAgent = this;
   }
-  public abstract login(loginCredentials: LoginCredentials): Promise<Response<null>>;
-  public abstract register(registerInfo: RegisterInfo): Promise<Response<null>>;
+  public abstract login(loginCredentials: LoginCredentials): Promise<Response<undefined>>;
+  public abstract register(registerInfo: RegisterInfo): Promise<Response<undefined>>;
   public abstract getFriendList(): Promise<Response<UserComplete[]>>;
-  public abstract requestAddFriend(target: UserBasic): Promise<Response<null>>;
+  public abstract requestAddFriend(target: UserBasic): Promise<Response<undefined>>;
   public abstract getMessageFromFriend(): Promise<Response<Message[]>>;
 }
 
@@ -36,19 +36,19 @@ interface SessionService {
   /**
    * @description 登陆成功将直接跳转到主页，不管成功还是失败都展示message
    */
-  login(loginCredentials: LoginCredentials): Promise<Response<null>>;
+  login(loginCredentials: LoginCredentials): Promise<Response<undefined>>;
 }
 
 interface UserService {
   /**
    * @description 注册成功将直接跳转到登陆，不管成功还是失败都展示message
    */
-  register(registerInfo: RegisterInfo): Promise<Response<null>>;
+  register(registerInfo: RegisterInfo): Promise<Response<undefined>>;
 }
 
 interface FriendsService {
   getFriendList(): Promise<Response<UserComplete[]>>;
-  requestAddFriend(target: UserBasic): Promise<Response<null>>;
+  requestAddFriend(target: UserBasic): Promise<Response<undefined>>;
 
 }
 
