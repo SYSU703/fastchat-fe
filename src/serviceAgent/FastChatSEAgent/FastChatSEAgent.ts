@@ -1,16 +1,18 @@
 import { RegisterInfo, LoginCredentials, UserBasic, UserComplete, Message } from '@/models';
-import { ServiceAgent, Response } from '@/serviceAgent';
-import { sessionRS, usersRS } from '@/serviceAgent/FastChatSEAgent';
+import { ServiceAgent, ServiceAgentVuePlugin, Response } from '@/serviceAgent';
+import { sessionRS, usersRS, configJWTHeader } from '@/serviceAgent/FastChatSEAgent';
 
-export class FastChatSEAgent extends ServiceAgent {
-  constructor() {
-    super();
+export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAgent {
+
+  public async login(loginCredentials: LoginCredentials): Promise<Response<UserComplete>> {
+    const res = await sessionRS
+      .post<Response<{ userInfo: UserComplete, jwt: string }>>('', loginCredentials);
+    const { msg, success, data } = res.data;
+    const { jwt, userInfo } = data;
+    configJWTHeader(jwt);
+    return { msg, success, data: userInfo };
   }
 
-  public async login(loginCredentials: LoginCredentials): Promise<Response<undefined>> {
-    const res = await sessionRS.post<Response<undefined>>('', loginCredentials);
-    return res.data;
-  }
   public async register(registerInfo: RegisterInfo): Promise<Response<undefined>> {
     const res = await usersRS.post('', registerInfo);
     return res.data;

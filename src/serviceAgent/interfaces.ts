@@ -2,28 +2,26 @@ import { RegisterInfo, LoginCredentials, UserBasic, UserComplete, Message } from
 import _Vue from 'vue';
 
 /**
- * @description 开发者需要自己编写一个类，entends这个抽象类。
- * fastchat-fe使用这个抽象类的API来进行数据通讯。
+ * @description
+ * fastchat-fe使用这个接口的API来进行数据通讯。
  * 一个例子是 /src/serviceAgent/FastChatSEAgent/FastChatSEAgent.ts
+ * 如果想要使用另一套服务器API，开发者需要自己编写一个类，实现这个接口（以及ServiceAgentVuePlugin），然后Vue.use(MyServiceAgent)。
  */
-export abstract class ServiceAgent implements
+export interface ServiceAgent extends
   SessionService,
   UserService,
   FriendsService,
   MessageService {
+}
 
+export abstract class ServiceAgentVuePlugin {
   /**
    * @description 这个类实现了Vue插件的接口，可以 Vue.use(MyServiceAgent)。
    */
   public install(vue: typeof _Vue, options?: any) {
-    vue.serviceAgent = this;
-    vue.prototype.$serviceAgent = this;
+    vue.serviceAgent = this as any;
+    vue.prototype.$serviceAgent = this as any;
   }
-  public abstract login(loginCredentials: LoginCredentials): Promise<Response<undefined>>;
-  public abstract register(registerInfo: RegisterInfo): Promise<Response<undefined>>;
-  public abstract getFriendList(): Promise<Response<UserComplete[]>>;
-  public abstract requestAddFriend(target: UserBasic): Promise<Response<undefined>>;
-  public abstract getMessageFromFriend(): Promise<Response<Message[]>>;
 }
 
 export interface Response<Data> {
@@ -36,7 +34,7 @@ interface SessionService {
   /**
    * @description 登陆成功将直接跳转到主页，不管成功还是失败都展示message
    */
-  login(loginCredentials: LoginCredentials): Promise<Response<undefined>>;
+  login(loginCredentials: LoginCredentials): Promise<Response<UserComplete>>;
 }
 
 interface UserService {

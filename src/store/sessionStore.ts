@@ -19,9 +19,9 @@ export default {
   },
   actions: {
     async login({ state, commit }, credentials: LoginCredentials) {
-      const res =  await Vue.serviceAgent.login(credentials);
-      commit('userChange', credentials);
+      const res = await Vue.serviceAgent.login(credentials);
+      commit('userChange', res.data);
       return res;
     },
   },
-} as Module<{currentUser: CurrentUser}, {}>;
+} as Module<{ currentUser: CurrentUser }, {}>;
