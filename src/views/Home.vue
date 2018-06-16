@@ -1,25 +1,29 @@
 <template>
   <div class="home">
-    <div>{{ userName }}</div>
-    <img src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+    <p>current user: {{ user?user.userName:'null' }}</p>
+    <FriendList :friend-list="friendList" />
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
-import HelloWorld from '@/components/HelloWorld.vue';
-import { User, LoginCredentials, UserState } from '@/models';
+import FriendList from '@/components/FriendList.vue';
+import { UserComplete, LoginCredentials, CurrentUser } from '@/models';
 
 export default Vue.extend({
   components: {
-    HelloWorld,
+    FriendList,
   },
   computed: {
-    userName(): User | null {
-      const user = this.$store.state.session.currentUser;
-      return user ? user.userName : 'null';
+    user(): CurrentUser {
+      return this.$store.state.session.currentUser;
     },
+    friendList(): UserComplete[] {
+      return this.$store.state.friends.friendList;
+    },
+  },
+  created() {
+    this.$store.dispatch('getFriendList');
   },
 });
 </script>
