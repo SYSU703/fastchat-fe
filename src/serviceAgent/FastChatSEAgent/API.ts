@@ -16,7 +16,11 @@ export const friendsRS = createAxiosInstanceWithJWTInterceptor({
 let jwtHeader = '';
 
 export function configJWTHeader(jwt: string) {
-  jwtHeader = `Bearer ${jwt}`;
+  if (!jwt) {
+    jwtHeader = '';
+  } else {
+    jwtHeader = `Bearer ${jwt}`;
+  }
 }
 
 function JWTInterceptor(config: AxiosRequestConfig) {

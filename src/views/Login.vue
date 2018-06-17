@@ -74,6 +74,9 @@ export default Vue.extend({
       },
     };
   },
+  created() {
+    this.$store.dispatch('logout');
+  },
   methods: {
     handleSubmit() {
       (this.$refs.loginForm as any).validate(async (valid: boolean) => {

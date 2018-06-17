@@ -13,6 +13,15 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
     return { msg, success, data: userInfo };
   }
 
+  public async logout(): Promise<Response<undefined>> {
+    configJWTHeader('');
+    return {
+      success: true,
+      msg: 'ok',
+      data: undefined,
+    };
+  }
+
   public async register(registerInfo: RegisterInfo): Promise<Response<undefined>> {
     const res = await usersRS.post('', registerInfo);
     return res.data;

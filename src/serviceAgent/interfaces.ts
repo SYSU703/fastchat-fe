@@ -35,6 +35,7 @@ interface SessionService {
    * @description 登陆成功将直接跳转到主页，不管成功还是失败都展示message
    */
   login(loginCredentials: LoginCredentials): Promise<Response<UserComplete>>;
+  logout(): Promise<Response<undefined>>;
 }
 
 interface UserService {
