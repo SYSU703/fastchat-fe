@@ -1,4 +1,4 @@
-import { RegisterInfo, LoginCredentials, UserBasic, UserComplete, Message } from '@/models';
+import { RegisterInfo, LoginCredentials, UserName, UserComplete, Message } from '@/models';
 import _Vue from 'vue';
 
 /**
@@ -47,7 +47,7 @@ interface UserService {
 
 interface FriendsService {
   getFriendList(): Promise<Response<UserComplete[]>>;
-  requestAddFriend(target: UserBasic): Promise<Response<undefined>>;
+  requestAddFriend(target: UserName): Promise<Response<undefined>>;
 
 }
 

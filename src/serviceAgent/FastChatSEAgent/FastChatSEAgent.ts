@@ -1,4 +1,4 @@
-import { RegisterInfo, LoginCredentials, UserBasic, UserComplete, Message } from '@/models';
+import { RegisterInfo, LoginCredentials, UserName, UserComplete, Message } from '@/models';
 import { ServiceAgent, ServiceAgentVuePlugin, Response } from '@/serviceAgent';
 import { sessionRS, usersRS, friendsRS, configJWTHeader } from '@/serviceAgent/FastChatSEAgent';
 
@@ -56,6 +56,6 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
     });
     */
   }
-  public requestAddFriend(target: UserBasic): Promise<Response<undefined>> { return 0 as any; }
+  public requestAddFriend(target: UserName): Promise<Response<undefined>> { return 0 as any; }
   public getMessageFromFriend(): Promise<Response<Message[]>> { return 0 as any; }
 }
