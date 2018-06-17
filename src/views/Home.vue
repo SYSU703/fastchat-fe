@@ -113,6 +113,7 @@
 import Vue from 'vue';
 import FriendList from '@/components/FriendList.vue';
 import { UserComplete, LoginCredentials, CurrentUser } from '@/models';
+import vuex from '@/store';
 
 export default Vue.extend({
   components: {
@@ -140,6 +141,14 @@ export default Vue.extend({
           break;
       }
     },
+  },
+  beforeRouteEnter(to, from, next) {
+    // console.log(vuex.state.session.currentUser);
+    if (!vuex.state.session.currentUser) {
+      next({ name: 'login' });
+      return;
+    }
+    next();
   },
 });
 </script>

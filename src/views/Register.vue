@@ -65,11 +65,19 @@
         <Button type="primary"
                 @click="handleSubmit()"
                 style="float: right;">注册</Button>
-        <a style="float: right; margin-right: 24px;">登陆</a>
+        <router-link :to="{name:'login'}"
+                     class="link-login">登陆</router-link>
       </FormItem>
     </Form>
   </Card>
 </template>
+
+<style lang="stylus" scoped>
+.link-login
+  float right
+  margin-right 24px
+</style>
+
 
 <script lang="ts">
 import Vue from 'vue';

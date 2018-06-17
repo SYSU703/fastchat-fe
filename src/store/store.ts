@@ -5,7 +5,9 @@ import friendStore from './friendStore';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+// 目前vuex对typescript的支持还不是很好
+// https://github.com/vuejs/vuex/issues/564
+export default new Vuex.Store<any>({
   state: {
 
   },

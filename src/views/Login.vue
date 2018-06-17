@@ -28,7 +28,8 @@
         <Button type="primary"
                 @click="handleSubmit()"
                 style="float: right;">登陆</Button>
-        <a style="float: right; margin-right: 24px;">注册</a>
+        <router-link :to="{name:'register'}"
+                     class="link-register">注册</router-link>
       </FormItem>
 
     </Form>
@@ -36,6 +37,9 @@
 </template>
 
 <style lang="stylus" scoped>
+.link-register
+  float right
+  margin-right 24px
 </style>
 
 
