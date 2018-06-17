@@ -1,16 +1,16 @@
 import Vue from 'vue';
-import { UserComplete, LoginCredentials, CurrentUser } from '@/models';
+import { UserComplete, LoginCredentials } from '@/models';
 import { Module } from 'vuex';
 
 export default {
   state: {
-    currentUser: null as CurrentUser,
+    currentUser: null as UserComplete | null,
   },
   getters: {
 
   },
   mutations: {
-    userChange(state, newUser: CurrentUser): void {
+    userChange(state, newUser: UserComplete | null): void {
       if (newUser == null || typeof newUser !== 'object' || !newUser.userName) {
         state.currentUser = null;
         return;
@@ -33,4 +33,4 @@ export default {
       return res;
     },
   },
-} as Module<{ currentUser: CurrentUser }, {}>;
+} as Module<{ currentUser: UserComplete | null }, {}>;

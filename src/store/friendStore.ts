@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { UserComplete, LoginCredentials, CurrentUser } from '@/models';
+import { UserComplete } from '@/models';
 import { Module } from 'vuex';
 
 export default {

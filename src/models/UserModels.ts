@@ -23,8 +23,3 @@ export interface UserComplete extends UserBasic {
   gender: string;
 }
 
-/**
- * @description 当前登陆用户的状态(null表示尚未登录)
- */
-export type CurrentUser = UserComplete | null;
-
