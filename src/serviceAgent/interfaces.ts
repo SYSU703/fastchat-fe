@@ -10,8 +10,8 @@ import _Vue from 'vue';
 export interface ServiceAgent extends
   SessionService,
   UserService,
-  FriendsService,
-  MessageService {
+  FriendService,
+  ChatService {
 }
 
 export abstract class ServiceAgentVuePlugin {
@@ -45,13 +45,13 @@ interface UserService {
   register(registerInfo: RegisterInfo): Promise<Response<undefined>>;
 }
 
-interface FriendsService {
+interface FriendService {
   getFriendList(): Promise<Response<UserComplete[]>>;
   requestAddFriend(target: UserName): Promise<Response<undefined>>;
 
 }
 
-interface MessageService {
+interface ChatService {
   getMessageFromFriend(): Promise<Response<Message[]>>;
 }
 

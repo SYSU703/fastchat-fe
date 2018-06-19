@@ -1,2 +1,2 @@
 export * from './UserModels';
-export * from './MessageModels';
+export * from './ChatModels';
