@@ -20,17 +20,17 @@
       </Header>
       <Layout class="home-body">
         <Sider class="home-sider">
-          <Menu active-name="f2"
-                theme="light"
+          <Menu theme="light"
                 width="auto"
-                :open-names="['friends']">
+                :open-names="['friends']"
+                @on-select="OnSelectFriend">
             <Submenu name="friends">
               <template slot="title">
                 <Icon type="ios-navigate" /> 好友
               </template>
-              <MenuItem name="f1">好友 1</MenuItem>
-              <MenuItem name="f2">好友 2</MenuItem>
-              <MenuItem name="f3">好友 3</MenuItem>
+              <MenuItem v-for="friend of friendList"
+                        :key="friend.friendInfo.userName"
+                        :name="friend.friendInfo.userName">{{ friend.friendInfo.nickname }}</MenuItem>
             </Submenu>
             <Submenu name="groups">
               <template slot="title">
@@ -51,7 +51,6 @@
             <div class="test">
               content
               <p>current user: {{ user?user.userName:'null' }}</p>
-              <FriendList :friend-list="friendList" />
             </div>
           </Content>
         </Layout>
@@ -111,19 +110,16 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import FriendList from '@/components/FriendList.vue';
-import { UserComplete, LoginCredentials, CurrentUser } from '@/models';
+import { Friend, LoginCredentials, UserComplete } from '@/models';
 import vuex from '@/store';
 
 export default Vue.extend({
-  components: {
-    FriendList,
-  },
+  components: {},
   computed: {
-    user(): CurrentUser {
+    user(): UserComplete | null {
       return this.$store.state.session.currentUser;
     },
-    friendList(): UserComplete[] {
+    friendList(): Friend[] {
       return this.$store.state.friends.friendList;
     },
   },
@@ -140,6 +136,9 @@ export default Vue.extend({
         default:
           break;
       }
+    },
+    OnSelectFriend(friendName: string) {
+      console.log(friendName);
     },
   },
   beforeRouteEnter(to, from, next) {

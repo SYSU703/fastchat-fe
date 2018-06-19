@@ -1,16 +1,16 @@
 import Vue from 'vue';
-import { UserComplete } from '@/models';
+import { Friend } from '@/models';
 import { Module } from 'vuex';
 
 export default {
   state: {
-    friendList: [] as UserComplete[],
+    friendList: [] as Friend[],
   },
   getters: {
 
   },
   mutations: {
-    updateFriendList(state, friendList: UserComplete[] | null) {
+    updateFriendList(state, friendList: Friend[] | null) {
       if (!friendList) { friendList = []; }
       state.friendList = friendList;
     },
@@ -21,4 +21,4 @@ export default {
       commit('updateFriendList', res.data);
     },
   },
-} as Module<{ friendList: UserComplete[] | null }, {}>;
+} as Module<{ friendList: Friend[] }, {}>;

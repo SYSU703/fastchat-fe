@@ -29,32 +29,6 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
   public async getFriendList(): Promise<Response<UserComplete[]>> {
     const res = await friendsRS.get('');
     return res.data;
-    /*
-    return Promise.resolve({
-      success: true,
-      msg: 'ok',
-      data: [
-        {
-          userName: 'f1',
-          nickname: 'ff1',
-          email: 'email1',
-          gender: 'male',
-        },
-        {
-          userName: 'f2',
-          nickname: 'ff2',
-          email: 'email2',
-          gender: 'male',
-        },
-        {
-          userName: 'f3',
-          nickname: 'ff3',
-          email: 'email3',
-          gender: 'male',
-        },
-      ],
-    });
-    */
   }
   public requestAddFriend(target: UserName): Promise<Response<undefined>> { return 0 as any; }
   public getMessageFromFriend(): Promise<Response<Message[]>> { return 0 as any; }
