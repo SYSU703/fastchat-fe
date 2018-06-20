@@ -16,16 +16,28 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
     const { msg, success, data } = res.data;
     const { jwt, userInfo } = data;
     configJWTHeader(jwt);
+    // 将会话信息保存在本地存储中，以便刷新以后恢复会话
+    window.sessionStorage.setItem('session', JSON.stringify(data));
     return { msg, success, data: userInfo };
   }
 
   public async logout() {
+    window.sessionStorage.removeItem('session');
     configJWTHeader('');
     return {
       success: true,
       msg: 'ok',
       data: undefined,
     };
+  }
+
+  public tryResumeSession() {
+    // 尝试从本地存储中恢复会话
+    const oldSession = window.sessionStorage.getItem('session');
+    if (!oldSession) { return null; }
+    const { jwt, userInfo } = JSON.parse(oldSession);
+    configJWTHeader(jwt);
+    return userInfo;
   }
 
   public async register(registerInfo: RegisterInfo) {

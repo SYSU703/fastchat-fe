@@ -154,10 +154,14 @@ export default Vue.extend({
       }
     },
   },
-  beforeRouteEnter(to, from, next) {
+  async beforeRouteEnter(to, from, next) {
     if (!vuex.state.session.currentUser) {
-      next({ name: 'login' });
-      return;
+      const resumedUser = await vuex.dispatch('tryResumeSession');
+      if (!resumedUser) {
+        // 恢复会话失败，需要重新登陆
+        next({ name: 'login' });
+        return;
+      }
     }
     next();
   },

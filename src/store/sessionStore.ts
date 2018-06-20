@@ -32,5 +32,15 @@ export default {
       commit('userChange', null);
       return res;
     },
+    async tryResumeSession({ state, commit }) {
+      if (!state.currentUser) {
+        const resumedUser = Vue.serviceAgent.tryResumeSession();
+        if (!resumedUser) { return null; }
+        commit('userChange', resumedUser);
+        return resumedUser;
+      } else {
+        return state.currentUser;
+      }
+    },
   },
 } as Module<{ currentUser: UserComplete | null }, {}>;

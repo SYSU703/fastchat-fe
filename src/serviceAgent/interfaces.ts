@@ -43,6 +43,7 @@ interface SessionService {
    */
   login(loginCredentials: LoginCredentials): Promise<Response<UserComplete>>;
   logout(): Promise<Response<undefined>>;
+  tryResumeSession(): UserComplete | null;
 }
 
 interface UserService {
