@@ -10,7 +10,7 @@ export default {
 
   },
   mutations: {
-    updateFriendList(state, friendList: Friend[] | null) {
+    loadFriendList(state, friendList: Friend[] | null) {
       if (!friendList) { friendList = []; }
       state.friendList = friendList;
     },
@@ -18,7 +18,7 @@ export default {
   actions: {
     async getFriendList({ state, commit }) {
       const res = await Vue.serviceAgent.getFriendList();
-      commit('updateFriendList', res.data);
+      commit('loadFriendList', res.data);
     },
   },
 } as Module<{ friendList: Friend[] }, {}>;

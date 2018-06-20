@@ -15,5 +15,5 @@ export interface ChatBasic {
 
 export interface ChatComplete extends ChatBasic {
   chatMembers: UserComplete[];
-  chatHistory: Message[];
+  chatMessages: Message[];
 }

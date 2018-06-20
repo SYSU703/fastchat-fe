@@ -13,6 +13,13 @@ export const friendsRS = createAxiosInstanceWithJWTInterceptor({
   baseURL: `${SERVER_ADDR}/friends`,
 });
 
+export const chatsRS = createAxiosInstanceWithJWTInterceptor({
+  baseURL: `${SERVER_ADDR}/chats`,
+});
+
+
+//////////////
+
 let jwtHeader = '';
 
 export function configJWTHeader(jwt: string) {

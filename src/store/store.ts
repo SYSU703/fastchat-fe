@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import sessionStore from './sessionStore';
 import friendStore from './friendStore';
+import chatStore from './chatStore';
 
 Vue.use(Vuex);
 
@@ -23,5 +24,6 @@ export default new Vuex.Store<any>({
   modules: {
     session: sessionStore,
     friends: friendStore,
+    chat: chatStore,
   },
 });

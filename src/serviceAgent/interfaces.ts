@@ -1,4 +1,11 @@
-import { RegisterInfo, LoginCredentials, UserName, UserComplete, Message } from '@/models';
+import {
+  RegisterInfo,
+  LoginCredentials,
+  UserName,
+  UserComplete,
+  Message,
+  Friend,
+} from '@/models';
 import _Vue from 'vue';
 
 /**
@@ -46,13 +53,14 @@ interface UserService {
 }
 
 interface FriendService {
-  getFriendList(): Promise<Response<UserComplete[]>>;
+  getFriendList(): Promise<Response<Friend[]>>;
   requestAddFriend(target: UserName): Promise<Response<undefined>>;
 
 }
 
 interface ChatService {
-  getMessageFromFriend(): Promise<Response<Message[]>>;
+  getChatMessages(chatId: string): Promise<Response<Message[]>>;
+  getChatMembers(chatId: string): Promise<Response<UserComplete[]>>;
 }
 
 

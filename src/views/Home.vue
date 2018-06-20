@@ -48,9 +48,14 @@
             <BreadcrumbItem>Layout</BreadcrumbItem>
           </Breadcrumb>
           <Content class="home-chat">
-            <div class="test">
+            <div>
               content
-              <p>current user: {{ user?user.userName:'null' }}</p>
+              <ol>
+                <li v-for="message of messages"
+                    :key="message.messageId">
+                  {{ message.content }}
+                </li>
+              </ol>
             </div>
           </Content>
         </Layout>
@@ -103,14 +108,11 @@
           background-color #fff
           padding 24px
           overflow auto
-
-.test
-  height 1200px
 </style>
 
 <script lang="ts">
 import Vue from 'vue';
-import { Friend, LoginCredentials, UserComplete } from '@/models';
+import { Friend, LoginCredentials, UserComplete, Message } from '@/models';
 import vuex from '@/store';
 
 export default Vue.extend({
@@ -121,6 +123,12 @@ export default Vue.extend({
     },
     friendList(): Friend[] {
       return this.$store.state.friends.friendList;
+    },
+    messages(): Message[] {
+      return this.$store.state.chat.messages;
+    },
+    members(): UserComplete[] {
+      return this.$store.state.chat.members;
     },
   },
   created() {
@@ -138,11 +146,15 @@ export default Vue.extend({
       }
     },
     OnSelectFriend(friendName: string) {
-      console.log(friendName);
+      for (const friend of this.friendList) {
+        if (friend.friendInfo.userName === friendName) {
+          this.$store.dispatch('loadChat', friend.chatInfo);
+          break;
+        }
+      }
     },
   },
   beforeRouteEnter(to, from, next) {
-    // console.log(vuex.state.session.currentUser);
     if (!vuex.state.session.currentUser) {
       next({ name: 'login' });
       return;
