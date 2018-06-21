@@ -41,22 +41,25 @@
             </Submenu>
           </Menu>
         </Sider>
-        <Layout class="home-content">
-          <Breadcrumb class="home-breadcrumb">
-            <BreadcrumbItem>Home</BreadcrumbItem>
-            <BreadcrumbItem>Components</BreadcrumbItem>
-            <BreadcrumbItem>Layout</BreadcrumbItem>
-          </Breadcrumb>
-          <Content class="home-chat">
-            <div>
-              content
-              <ol>
-                <li v-for="message of messages"
-                    :key="message.messageId">
-                  {{ message.content }}
-                </li>
-              </ol>
-            </div>
+        <Layout class="home-chat"
+                v-if="chatInfo">
+
+          <Content class="home-chat-header">
+            <h2>与 {{ membersWithoutMe[0]?membersWithoutMe[0].userName:'' }} 的聊天</h2>
+          </Content>
+
+          <Content class="home-chat-content">
+            <MessageWindow class="message-window"
+                           :messages="messages"
+                           :my-user-name="user.userName" />
+          </Content>
+
+          <Content class="home-chat-input">
+            <Input class="chat-textarea"
+                   v-model="input"
+                   type="textarea"
+                   :rows="5"
+                   placeholder="Enter something..."></Input>
           </Content>
         </Layout>
       </Layout>
@@ -97,26 +100,51 @@
       .home-sider
         background-color #fff
 
-      .home-content
+      .home-chat
         padding 0 24px 24px 24px
         overflow hidden
 
-        .home-breadcrumb
+        .home-chat-header
+          flex 0 0 auto
           margin 24px 0
 
-        .home-chat
+        .home-chat-content
           background-color #fff
-          padding 24px
           overflow auto
+          display flex
+          flex-direction column
+
+          .message-window
+            flex-grow 1
+
+        .home-chat-input
+          flex 0 0 auto
+
+          /deep/ textarea
+            resize none
 </style>
 
 <script lang="ts">
 import Vue from 'vue';
-import { Friend, LoginCredentials, UserComplete, Message } from '@/models';
+import {
+  Friend,
+  LoginCredentials,
+  UserComplete,
+  Message,
+  ChatBasic,
+} from '@/models';
 import vuex from '@/store';
+import MessageWindow from '@/components/MessageWindow.vue';
 
 export default Vue.extend({
-  components: {},
+  components: {
+    MessageWindow,
+  },
+  data() {
+    return {
+      input: '',
+    };
+  },
   computed: {
     user(): UserComplete | null {
       return this.$store.state.session.currentUser;
@@ -129,6 +157,12 @@ export default Vue.extend({
     },
     members(): UserComplete[] {
       return this.$store.state.chat.members;
+    },
+    membersWithoutMe(): UserComplete[] {
+      return this.$store.getters.chatMembersWithoutMe;
+    },
+    chatInfo(): ChatBasic | null {
+      return this.$store.state.chat.basicInfo;
     },
   },
   created() {

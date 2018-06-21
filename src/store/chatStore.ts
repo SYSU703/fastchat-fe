@@ -9,7 +9,10 @@ export default {
     members: [] as UserComplete[],
   },
   getters: {
-
+    chatMembersWithoutMe(state, getters, rootState) {
+      const currentUser = rootState.session.currentUser;
+      return state.members.filter((member) => member.userName !== currentUser.userName);
+    },
   },
   mutations: {
     switchChat(state, newChat: ChatBasic | null) {
@@ -43,4 +46,4 @@ export default {
   basicInfo: ChatBasic | null;
   messages: Message[];
   members: UserComplete[];
-}, {}>;
+}, any>;
