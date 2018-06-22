@@ -57,9 +57,10 @@
           <Content class="home-chat-input">
             <Input class="chat-textarea"
                    v-model="input"
+                   @on-keydown="OnInputKeydown"
                    type="textarea"
                    :rows="5"
-                   placeholder="Enter something..."></Input>
+                   placeholder="Enter换行，Ctrl+Enter发送"></Input>
           </Content>
         </Layout>
       </Layout>
@@ -185,6 +186,11 @@ export default Vue.extend({
           this.$store.dispatch('loadChat', friend.chatInfo);
           break;
         }
+      }
+    },
+    OnInputKeydown(event: KeyboardEvent) {
+      if (event.keyCode === 13 && event.ctrlKey) {
+        this.$store.dispatch('sendMessage', this.input);
       }
     },
   },

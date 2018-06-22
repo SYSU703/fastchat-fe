@@ -41,6 +41,13 @@ export default {
       const messagesRes = await Vue.serviceAgent.getChatMessages(chatBasic.chatId);
       commit('loadMessages', messagesRes.data);
     },
+    async sendMessage({ state, commit, rootState }, content: string) {
+      if (!state.basicInfo) { return; }
+      const messageRes
+        = await Vue.serviceAgent.sendMessage(state.basicInfo.chatId,
+          rootState.session.currentUser.userName,
+          content);
+    },
   },
 } as Module<{
   basicInfo: ChatBasic | null;

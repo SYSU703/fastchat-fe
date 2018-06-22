@@ -58,4 +58,9 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
     const res = await chatsRS.get(`${chatId}/messages`);
     return res.data;
   }
+
+  public async sendMessage(chatId: string, from: string, content: string) {
+    const res = await chatsRS.post(`${chatId}/messages`, { from, content });
+    return res.data;
+  }
 }
