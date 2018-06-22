@@ -183,7 +183,7 @@ export default Vue.extend({
     OnSelectFriend(friendName: string) {
       for (const friend of this.friendList) {
         if (friend.friendInfo.userName === friendName) {
-          this.$store.dispatch('loadChat', friend.chatInfo);
+          this.$store.dispatch('getChat', friend.chatInfo);
           break;
         }
       }

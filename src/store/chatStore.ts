@@ -15,27 +15,33 @@ export default {
     },
   },
   mutations: {
-    switchChat(state, newChat: ChatBasic | null) {
+    loadChat(state, newChat: ChatBasic | null) {
       if (!newChat || typeof newChat !== 'object') {
         state.basicInfo = null;
         return;
       }
       state.basicInfo = { ...newChat };
     },
-    loadMessages(state, messages: Message[]) {
-      if (!messages || messages.length === 0) { return; }
+    loadMessages(state, messages: Message[] | null) {
+      if (!messages || messages.length === 0) {
+        state.messages = [];
+        return;
+      }
       state.messages = [...messages];
       return;
     },
-    loadMembers(state, members: UserComplete[]) {
-      if (!members || members.length === 0) { return; }
+    loadMembers(state, members: UserComplete[] | null) {
+      if (!members || members.length === 0) {
+        state.members = [];
+        return;
+      }
       state.members = [...members];
       return;
     },
   },
   actions: {
-    async loadChat({ state, commit }, chatBasic: ChatBasic) {
-      commit('switchChat', chatBasic);
+    async getChat({ state, commit }, chatBasic: ChatBasic) {
+      commit('loadChat', chatBasic);
       const membersRes = await Vue.serviceAgent.getChatMembers(chatBasic.chatId);
       commit('loadMembers', membersRes.data);
       const messagesRes = await Vue.serviceAgent.getChatMessages(chatBasic.chatId);
