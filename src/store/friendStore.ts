@@ -20,5 +20,8 @@ export default {
       const res = await Vue.serviceAgent.getFriendList();
       commit('loadFriendList', res.data);
     },
+    async resetFriends({ commit }) {
+      commit('loadFriendList', null);
+    },
   },
 } as Module<{ friendList: Friend[] }, {}>;

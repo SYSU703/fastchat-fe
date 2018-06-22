@@ -24,12 +24,14 @@ export default {
       commit('userChange', res.data);
       return res;
     },
-    async logout({ state, commit }) {
+    async logout({ state, commit, dispatch }) {
       const res = await Vue.serviceAgent.logout();
       if (!res.success) {
         throw new Error('登出失败');
       }
       commit('userChange', null);
+      dispatch('resetFriends');
+      dispatch('resetChat');
       return res;
     },
     async tryResumeSession({ state, commit }) {

@@ -11,6 +11,7 @@ export default {
   getters: {
     chatMembersWithoutMe(state, getters, rootState) {
       const currentUser = rootState.session.currentUser;
+      if (!currentUser) { return []; }
       return state.members.filter((member) => member.userName !== currentUser.userName);
     },
   },
@@ -53,6 +54,11 @@ export default {
         = await Vue.serviceAgent.sendMessage(state.basicInfo.chatId,
           rootState.session.currentUser.userName,
           content);
+    },
+    async resetChat({ state, commit }) {
+      commit('loadChat', null);
+      commit('loadMembers', null);
+      commit('loadMessages', null);
     },
   },
 } as Module<{
