@@ -24,6 +24,6 @@ export default new Vuex.Store<any>({
   modules: {
     session: sessionStore,
     friends: friendStore,
-    chat: chatStore,
+    chats: chatStore,
   },
 });

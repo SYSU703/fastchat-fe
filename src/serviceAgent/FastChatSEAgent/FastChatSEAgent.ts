@@ -44,10 +44,15 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
     const res = await usersRS.post('', registerInfo);
     return res.data;
   }
-  public async getFriendList() {
+  public async getFriends() {
     const res = await friendsRS.get('');
     return res.data;
   }
+  public async getChats() {
+    const res = await chatsRS.get('');
+    return res.data;
+  }
+
   public requestAddFriend(target: UserName) { return 0 as any; }
 
   public async getChatMembers(chatId: string) {

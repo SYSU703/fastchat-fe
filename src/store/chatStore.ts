@@ -4,65 +4,74 @@ import { Module } from 'vuex';
 
 export default {
   state: {
-    basicInfo: null as ChatBasic | null,
-    messages: [] as Message[],
-    members: [] as UserComplete[],
+    chats: new Map() as Map<string, ChatBasic>, // 以chatId为key
+    chatsChangeTracker: 1,  // https://stackoverflow.com/a/45441321
+    currentChat: null as ChatComplete | null,
   },
   getters: {
     chatMembersWithoutMe(state, getters, rootState) {
       const currentUser = rootState.session.currentUser;
-      if (!currentUser) { return []; }
-      return state.members.filter((member) => member.userName !== currentUser.userName);
+      if (!currentUser || !state.currentChat) { return []; }
+      return state.currentChat.chatMembers
+        .filter((member) => member.userName !== currentUser.userName);
+    },
+    privateChats(state): ChatBasic[] {
+      if (!Number.isSafeInteger(state.chatsChangeTracker)) {
+        throw new Error(`ChangeTracker超出范围`);
+      }
+      return Array.from(state.chats)
+        .map((item) => item[1])
+        .filter((chat) => !chat.isGroup);
     },
   },
   mutations: {
-    loadChat(state, newChat: ChatBasic | null) {
+    loadChats(state, chats: ChatBasic[] | null) {
+      if (!chats) { chats = []; }
+      const map = new Map<string, ChatBasic>();
+      chats.forEach((chat) => {
+        map.set(chat.chatId, chat);
+      });
+      state.chats = map;
+    },
+    loadOneChat(state, newChat: ChatComplete | null) {
       if (!newChat || typeof newChat !== 'object') {
-        state.basicInfo = null;
+        state.currentChat = null;
         return;
       }
-      state.basicInfo = { ...newChat };
-    },
-    loadMessages(state, messages: Message[] | null) {
-      if (!messages || messages.length === 0) {
-        state.messages = [];
-        return;
-      }
-      state.messages = [...messages];
-      return;
-    },
-    loadMembers(state, members: UserComplete[] | null) {
-      if (!members || members.length === 0) {
-        state.members = [];
-        return;
-      }
-      state.members = [...members];
-      return;
+      state.currentChat = { ...newChat };
     },
   },
   actions: {
-    async getChat({ state, commit }, chatBasic: ChatBasic) {
-      commit('loadChat', chatBasic);
-      const membersRes = await Vue.serviceAgent.getChatMembers(chatBasic.chatId);
-      commit('loadMembers', membersRes.data);
-      const messagesRes = await Vue.serviceAgent.getChatMessages(chatBasic.chatId);
-      commit('loadMessages', messagesRes.data);
+    async getChats({ commit, dispatch }) {
+      const chats = await Vue.serviceAgent.getChats();
+      commit('loadChats', chats.data);
+    },
+    async loadOneChat({ state, commit }, chatId: string) {
+      let chat = state.chats.get(chatId) as ChatComplete;
+      if (!chat) {
+        throw new Error(`chatId ${chatId} 不存在`);
+      }
+      chat = { ...chat };
+      const membersRes = await Vue.serviceAgent.getChatMembers(chatId);
+      chat.chatMembers = membersRes.data;
+      const messagesRes = await Vue.serviceAgent.getChatMessages(chatId);
+      chat.chatMessages = messagesRes.data;
+      commit('loadOneChat', chat);
     },
     async sendMessage({ state, commit, rootState }, content: string) {
-      if (!state.basicInfo) { return; }
+      if (!state.currentChat) { return; }
       const messageRes
-        = await Vue.serviceAgent.sendMessage(state.basicInfo.chatId,
+        = await Vue.serviceAgent.sendMessage(state.currentChat.chatId,
           rootState.session.currentUser.userName,
           content);
     },
     async resetChat({ state, commit }) {
-      commit('loadChat', null);
-      commit('loadMembers', null);
-      commit('loadMessages', null);
+      commit('loadChats', null);
+      commit('loadOneChat', null);
     },
   },
 } as Module<{
-  basicInfo: ChatBasic | null;
-  messages: Message[];
-  members: UserComplete[];
+  chats: Map<string, ChatBasic>;
+  chatsChangeTracker: number;
+  currentChat: ChatComplete | null;
 }, any>;

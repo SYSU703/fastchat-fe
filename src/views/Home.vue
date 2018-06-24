@@ -128,11 +128,11 @@
 <script lang="ts">
 import Vue from 'vue';
 import {
-  Friend,
   LoginCredentials,
   UserComplete,
   Message,
   ChatBasic,
+  FriendWithChatInfo,
 } from '@/models';
 import vuex from '@/store';
 import MessageWindow from '@/components/MessageWindow.vue';
@@ -150,24 +150,27 @@ export default Vue.extend({
     user(): UserComplete | null {
       return this.$store.state.session.currentUser;
     },
-    friendList(): Friend[] {
-      return this.$store.state.friends.friendList;
+    friendList(): FriendWithChatInfo[] {
+      return this.$store.getters.friendsAndPrivateChats;
     },
     messages(): Message[] {
-      return this.$store.state.chat.messages;
+      const currentChat = this.$store.state.chats.currentChat;
+      return currentChat ? currentChat.chatMessages : [];
     },
     members(): UserComplete[] {
-      return this.$store.state.chat.members;
+      const currentChat = this.$store.state.chats.currentChat;
+      return currentChat ? currentChat.chatMembers : [];
     },
     membersWithoutMe(): UserComplete[] {
       return this.$store.getters.chatMembersWithoutMe;
     },
     chatInfo(): ChatBasic | null {
-      return this.$store.state.chat.basicInfo;
+      return this.$store.state.chats.currentChat;
     },
   },
-  created() {
-    this.$store.dispatch('getFriendList');
+  async created() {
+    await this.$store.dispatch('getChats');
+    await this.$store.dispatch('getFriends');
   },
   methods: {
     OnSelectNav(target: string) {
@@ -181,12 +184,11 @@ export default Vue.extend({
       }
     },
     OnSelectFriend(friendName: string) {
-      for (const friend of this.friendList) {
-        if (friend.friendInfo.userName === friendName) {
-          this.$store.dispatch('getChat', friend.chatInfo);
-          break;
-        }
+      const friend = this.$store.state.friends.friends.get(friendName);
+      if (!friend) {
+        throw new Error(`找不到好友${friendName}`);
       }
+      this.$store.dispatch('loadOneChat', friend.chatId);
     },
     OnInputKeydown(event: KeyboardEvent) {
       if (event.keyCode === 13 && event.ctrlKey) {

@@ -4,7 +4,8 @@ import {
   UserName,
   UserComplete,
   Message,
-  Friend,
+  FriendBasic,
+  ChatBasic,
 } from '@/models';
 import _Vue from 'vue';
 
@@ -54,12 +55,13 @@ interface UserService {
 }
 
 interface FriendService {
-  getFriendList(): Promise<Response<Friend[]>>;
+  getFriends(): Promise<Response<FriendBasic[]>>;
   requestAddFriend(target: UserName): Promise<Response<undefined>>;
 
 }
 
 interface ChatService {
+  getChats(): Promise<Response<ChatBasic[]>>;
   getChatMessages(chatId: string): Promise<Response<Message[]>>;
   getChatMembers(chatId: string): Promise<Response<UserComplete[]>>;
   sendMessage(chatId: string, from: string, content: string): Promise<Response<Message>>;
