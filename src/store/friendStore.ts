@@ -6,25 +6,29 @@ export default {
   state: {
     // https://stackoverflow.com/a/45441321
     friends: new Map() as Map<string, FriendBasic>, // 以好友userName为key
-    _friendsChangeTracker: 1,
+    friendsChangeTracker: 1,
   },
   getters: {
-    // friendsAndPrivateChats必须在loadChats完成以后才可以访问
+    // 如果friends先加载，chat尚未加载完成，则会出现chats与friends不一致的情况：
+    // 某个好友没有对应的私聊。
     friendsAndPrivateChats(state, getters, rootState): FriendWithChatInfo[] {
       // 访问tracker使得这个getter依赖于它
       // 从而tracker改变就会触发getter更新
-      if (!Number.isSafeInteger(state._friendsChangeTracker) ||
+      if (!Number.isSafeInteger(state.friendsChangeTracker) ||
         !Number.isSafeInteger(rootState.chats.chatsChangeTracker)) {
         throw new Error(`ChangeTracker超出范围`);
       }
-      // console.log(rootState.chats.chats);
-      return Array.from(state.friends).map(([key, friend]) => {
+      const result = [];
+      const friendsArr = Array.from(state.friends);
+      for (const [key, friend] of friendsArr) {
         const chat = rootState.chats.chats.get(friend.chatId);
         if (!chat) {
-          throw new Error(`${friend.userName}没有对应的私聊`);
+          // ${friend.userName}没有对应的私聊，暂时不返回这个好友的相关信息
+          continue;
         }
-        return { friendInfo: friend, chatInfo: chat };
-      });
+        result.push({ friendInfo: friend, chatInfo: chat });
+      }
+      return result;
     },
   },
   mutations: {
@@ -42,11 +46,14 @@ export default {
       const res = await Vue.serviceAgent.getFriends();
       commit('loadFriends', res.data);
     },
+    async updateFriends({ commit }, friends) {
+      commit('loadFriends', friends);
+    },
     async resetFriends({ commit }) {
       commit('loadFriends', null);
     },
   },
 } as Module<{
   friends: Map<string, FriendBasic>;
-  _friendsChangeTracker: number;
+  friendsChangeTracker: number;
 }, any>;

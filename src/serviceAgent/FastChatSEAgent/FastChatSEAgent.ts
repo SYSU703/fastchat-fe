@@ -1,4 +1,13 @@
-import { RegisterInfo, LoginCredentials, UserName, UserComplete, Message } from '@/models';
+import {
+  RegisterInfo,
+  LoginCredentials,
+  UserName,
+  UserComplete,
+  Message,
+  ChatBasic,
+  FriendBasic,
+  chatListhasChange,
+} from '@/models';
 import { ServiceAgent, ServiceAgentVuePlugin, Response } from '@/serviceAgent';
 import {
   configJWTHeader,
@@ -7,8 +16,40 @@ import {
   friendsRS,
   chatsRS,
 } from '@/serviceAgent/FastChatSEAgent';
+import store from '@/store';
 
 export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAgent {
+  private userUpdate: (user: UserComplete) => void = (null as any);
+  private friendListUpdate: (friends: FriendBasic[]) => void = (null as any);
+  private chatListUpdate: (chats: ChatBasic[]) => void = (null as any);
+  private oneChatMembersUpdate: (members: UserComplete[]) => void = (null as any);
+  private intervalId = -1;
+
+  public subscribeUpdate(
+    userUpdate: (user: UserComplete) => void,
+    friendListUpdate: (friends: FriendBasic[]) => void,
+    chatListUpdate: (chats: ChatBasic[]) => void,
+    oneChatMembersUpdate: (members: UserComplete[]) => void,
+  ) {
+    this.userUpdate = userUpdate;
+    this.friendListUpdate = friendListUpdate;
+    this.chatListUpdate = chatListUpdate;
+    this.oneChatMembersUpdate = oneChatMembersUpdate;
+    this.intervalId = window.setInterval(async () => {
+      const res = await this.getChats();
+      const chats = res.data;
+      if (chatListhasChange(store.state.chats.chats, chats)) {
+        chatListUpdate(chats);
+      }
+    }, 2000);
+  }
+
+  public unsubscribeUpdate() {
+    window.clearInterval(this.intervalId);
+    this.intervalId = -1;
+    this.userUpdate = this.friendListUpdate =
+      this.chatListUpdate = this.oneChatMembersUpdate = null as any;
+  }
 
   public async login(loginCredentials: LoginCredentials) {
     const res = await sessionRS

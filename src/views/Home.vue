@@ -48,7 +48,8 @@
             <h2>与 {{ membersWithoutMe[0]?membersWithoutMe[0].userName:'' }} 的聊天</h2>
           </Content>
 
-          <Content class="home-chat-content">
+          <Content class="home-chat-content"
+                   ref="container">
             <MessageWindow class="message-window"
                            :messages="messages"
                            :my-user-name="user.userName" />
@@ -132,6 +133,7 @@ import {
   UserComplete,
   Message,
   ChatBasic,
+  ChatComplete,
   FriendWithChatInfo,
 } from '@/models';
 import vuex from '@/store';
@@ -154,23 +156,37 @@ export default Vue.extend({
       return this.$store.getters.friendsAndPrivateChats;
     },
     messages(): Message[] {
-      const currentChat = this.$store.state.chats.currentChat;
+      const currentChat = this.chatInfo;
       return currentChat ? currentChat.chatMessages : [];
     },
     members(): UserComplete[] {
-      const currentChat = this.$store.state.chats.currentChat;
+      const currentChat = this.chatInfo;
       return currentChat ? currentChat.chatMembers : [];
     },
     membersWithoutMe(): UserComplete[] {
       return this.$store.getters.chatMembersWithoutMe;
     },
-    chatInfo(): ChatBasic | null {
+    chatInfo(): ChatComplete | null {
       return this.$store.state.chats.currentChat;
     },
   },
-  async created() {
-    await this.$store.dispatch('getChats');
-    await this.$store.dispatch('getFriends');
+  watch: {
+    chatInfo: function(
+      newVal: ChatComplete | null,
+      oldVal: ChatComplete | null,
+    ) {
+      if (!newVal || !this.$refs.container) return;
+      if (
+        !oldVal ||
+        newVal.lastestMessage.messageId !== oldVal.lastestMessage.messageId
+      ) {
+        // 消息更新时，窗口滚动到最下方
+        this.$nextTick(() => {
+          (this.$refs.container as any).$el.scrollTop = (this.$refs
+            .container as any).$el.scrollHeight;
+        });
+      }
+    },
   },
   methods: {
     OnSelectNav(target: string) {
@@ -190,9 +206,10 @@ export default Vue.extend({
       }
       this.$store.dispatch('loadOneChat', friend.chatId);
     },
-    OnInputKeydown(event: KeyboardEvent) {
+    async OnInputKeydown(event: KeyboardEvent) {
       if (event.keyCode === 13 && event.ctrlKey) {
-        this.$store.dispatch('sendMessage', this.input);
+        await this.$store.dispatch('sendMessage', this.input);
+        this.input = '';
       }
     },
   },

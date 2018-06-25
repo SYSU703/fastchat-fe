@@ -6,6 +6,7 @@ import {
   Message,
   FriendBasic,
   ChatBasic,
+  ChatComplete,
 } from '@/models';
 import _Vue from 'vue';
 
@@ -19,7 +20,8 @@ export interface ServiceAgent extends
   SessionService,
   UserService,
   FriendService,
-  ChatService {
+  ChatService,
+  UpdateService {
 }
 
 export abstract class ServiceAgentVuePlugin {
@@ -67,4 +69,29 @@ interface ChatService {
   sendMessage(chatId: string, from: string, content: string): Promise<Response<Message>>;
 }
 
-
+/**
+ * @description
+ * fastchat-fe不知道数据什么时候会更新，需要ServiceAgent的实现者来通知它。
+ * 通知的方式是，当ServiceAgent发现数据更新时，调用对应的回调函数。
+ * 比如，发现有新消息时要调用chatListUpdate。
+ *
+ * 以chatListUpdate为例子：
+ * fastchat-fe会调用registerUpdateCallback来注册回调函数chatListUpdate（订阅chatList的更新），
+ * 由ServiceAgent的实现者来决定什么时候调用chatListUpdate。
+ * ServiceAgent的实现者可以通过很多种方式来发现数据更新。比如轮询、websocket、server push……
+ * 不管通过什么方法，在发现“增加删除chat，以及有chat的chatName发生改变、lastestMessage改变”时，
+ * 就要调用chatListUpdate来通知fastchat-fe响应数据的更新。
+ */
+interface UpdateService {
+  subscribeUpdate(
+    // 登陆用户的基本信息发生改变
+    userUpdate: (user: UserComplete) => void,
+    // 增加删除好友，以及有好友的基本信息发生改变
+    friendListUpdate: (friends: FriendBasic[]) => void,
+    // 增加删除chat，以及有chat的chatName发生改变、lastestMessage改变
+    chatListUpdate: (chats: ChatBasic[]) => void,
+    // 某个chat的成员数量、成员信息发生改变
+    oneChatMembersUpdate: (members: UserComplete[]) => void,
+  ): void;
+  unsubscribeUpdate(): void;
+}

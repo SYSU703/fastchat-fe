@@ -13,6 +13,24 @@ export interface ChatBasic {
   lastestMessage: Message;  // 用于在群聊列表直接显示最近一条消息。还可以用来判断是否有未读消息。
 }
 
+export function chatHasChanged(chat1: ChatBasic, chat2: ChatBasic) {
+  if (chat1.chatId !== chat2.chatId) {
+    throw new Error(`chatId不能改变`);
+  }
+  return chat1.chatName !== chat2.chatName
+    || chat1.lastestMessage.messageId !== chat2.lastestMessage.messageId;
+}
+
+export function chatListhasChange(oldChatList: Map<string, ChatBasic>, newChatList: ChatBasic[]) {
+  if (oldChatList.size !== newChatList.length) { return true; }
+  for (const chat of newChatList) {
+    const oldChat = oldChatList.get(chat.chatId);
+    if (!oldChat) { return true; }
+    if (chatHasChanged(oldChat, chat)) { return true; }
+  }
+  return false;
+}
+
 export interface ChatComplete extends ChatBasic {
   chatMembers: UserComplete[];
   chatMessages: Message[];

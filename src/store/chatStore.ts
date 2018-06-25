@@ -1,5 +1,9 @@
 import Vue from 'vue';
-import { ChatBasic, ChatComplete, Message, UserComplete } from '@/models';
+import {
+  ChatBasic,
+  ChatComplete,
+  chatHasChanged,
+} from '@/models';
 import { Module } from 'vuex';
 
 export default {
@@ -46,6 +50,22 @@ export default {
       const chats = await Vue.serviceAgent.getChats();
       commit('loadChats', chats.data);
     },
+    async updateChats({ commit, state, dispatch }, chats: ChatBasic[]) {
+      const oldChat = state.currentChat;
+      let shouldUpdateCurrentChat = false;
+      if (oldChat) {
+        for (const chat of chats) {
+          if (chat.chatId === oldChat.chatId && chatHasChanged(oldChat, chat)) {
+            shouldUpdateCurrentChat = true;
+            break;
+          }
+        }
+      }
+      commit('loadChats', chats);
+      if (shouldUpdateCurrentChat) {
+        dispatch('loadOneChat', oldChat!.chatId);
+      }
+    },
     async loadOneChat({ state, commit }, chatId: string) {
       let chat = state.chats.get(chatId) as ChatComplete;
       if (!chat) {
@@ -58,12 +78,13 @@ export default {
       chat.chatMessages = messagesRes.data;
       commit('loadOneChat', chat);
     },
-    async sendMessage({ state, commit, rootState }, content: string) {
+    async sendMessage({ state, dispatch, rootState }, content: string) {
       if (!state.currentChat) { return; }
       const messageRes
         = await Vue.serviceAgent.sendMessage(state.currentChat.chatId,
           rootState.session.currentUser.userName,
           content);
+      return messageRes;
     },
     async resetChat({ state, commit }) {
       commit('loadChats', null);

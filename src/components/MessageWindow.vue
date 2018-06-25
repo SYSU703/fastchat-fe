@@ -1,6 +1,5 @@
 <template>
-  <Card class="message-window"
-        dis-hover>
+  <Card dis-hover>
     <div v-for="message of messages"
          :key="message.messageId"
          :class="{ isMyMessage: myUserName===message.from }"
@@ -13,18 +12,17 @@
 </template>
 
 <style lang="stylus" scoped>
-.message-window
-  .message-row
-    margin-bottom 24px
+.message-row
+  margin-bottom 24px
 
-    &.isMyMessage
-      text-align right
+  &.isMyMessage
+    text-align right
 
-    .message-box
-      display inline-block
-      border 1px solid black
-      padding 3px 10px
-      max-width 50%
+  .message-box
+    display inline-block
+    border 1px solid black
+    padding 3px 10px
+    max-width 50%
 </style>
 
 <script lang="ts">

@@ -19,9 +19,13 @@ export default {
     },
   },
   actions: {
-    async login({ state, commit }, credentials: LoginCredentials) {
+    async login({ dispatch, commit }, credentials: LoginCredentials) {
       const res = await Vue.serviceAgent.login(credentials);
       commit('userChange', res.data);
+      // 登陆成功以后获取好友列表和聊天列表
+      dispatch('getChats');
+      dispatch('getFriends');
+      dispatch('subscribeChanges');
       return res;
     },
     async logout({ state, commit, dispatch }) {
@@ -32,17 +36,33 @@ export default {
       commit('userChange', null);
       dispatch('resetFriends');
       dispatch('resetChat');
+      dispatch('unSubscribeChanges');
       return res;
     },
-    async tryResumeSession({ state, commit }) {
+    async tryResumeSession({ state, commit, dispatch }) {
       if (!state.currentUser) {
         const resumedUser = Vue.serviceAgent.tryResumeSession();
         if (!resumedUser) { return null; }
         commit('userChange', resumedUser);
+        // 登陆成功以后获取好友列表和聊天列表
+        dispatch('getChats');
+        dispatch('getFriends');
+        dispatch('subscribeChanges');
         return resumedUser;
       } else {
         return state.currentUser;
       }
+    },
+    subscribeChanges({ commit, dispatch }) {
+      Vue.serviceAgent.subscribeUpdate(
+        (user) => commit('userChange', user),
+        (friends) => dispatch('updateFriends', friends),
+        (chats) => dispatch('updateChats', chats),
+        (members) => dispatch('updateOneChatMembers', members),
+      );
+    },
+    unSubscribeChanges() {
+      Vue.serviceAgent.unsubscribeUpdate();
     },
   },
 } as Module<{ currentUser: UserComplete | null }, {}>;
