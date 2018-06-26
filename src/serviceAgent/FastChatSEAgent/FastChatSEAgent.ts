@@ -109,4 +109,8 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
     const res = await chatsRS.post(`${chatId}/messages`, { from, content });
     return res.data;
   }
+  public async createGroupChat(): Promise<Response<ChatBasic>> {
+    const res = await chatsRS.post('', { chatName: '默认群名' });
+    return res.data;
+  }
 }

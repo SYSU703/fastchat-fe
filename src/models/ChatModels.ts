@@ -6,19 +6,27 @@ export interface Message {
   from: UserName;
 }
 
+export function messageHasChanged(message1: Message | null, message2: Message | null) {
+  return !!(
+    (message1 && !message2)
+    || (!message1 && message2)
+    || (message1 && message2 && message1.messageId !== message2.messageId)
+  );
+}
+
 export interface ChatBasic {
   chatId: string;
   chatName: string | null;  // 私聊的chatName必须为null，群聊的必须为string
   isGroup: boolean;
-  lastestMessage: Message;  // 用于在群聊列表直接显示最近一条消息。还可以用来判断是否有未读消息。
+  lastestMessage: Message | null;  // 用于在群聊列表直接显示最近一条消息。还可以用来判断是否有未读消息。
 }
 
 export function chatHasChanged(chat1: ChatBasic, chat2: ChatBasic) {
   if (chat1.chatId !== chat2.chatId) {
     throw new Error(`chatId不能改变`);
   }
-  return chat1.chatName !== chat2.chatName
-    || chat1.lastestMessage.messageId !== chat2.lastestMessage.messageId;
+  if (chat1.chatName !== chat2.chatName) { return true; }
+  return messageHasChanged(chat1.lastestMessage, chat2.lastestMessage);
 }
 
 export function chatListhasChange(oldChatList: Map<string, ChatBasic>, newChatList: ChatBasic[]) {

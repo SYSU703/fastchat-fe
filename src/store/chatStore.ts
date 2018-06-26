@@ -27,6 +27,14 @@ export default {
         .map((item) => item[1])
         .filter((chat) => !chat.isGroup);
     },
+    groupChats(state): ChatBasic[] {
+      if (!Number.isSafeInteger(state.chatsChangeTracker)) {
+        throw new Error(`ChangeTracker超出范围`);
+      }
+      return Array.from(state.chats)
+        .map((item) => item[1])
+        .filter((chat) => chat.isGroup);
+    },
   },
   mutations: {
     loadChats(state, chats: ChatBasic[] | null) {
@@ -89,6 +97,9 @@ export default {
     async resetChat({ state, commit }) {
       commit('loadChats', null);
       commit('loadOneChat', null);
+    },
+    async createGroupChat() {
+      const newGroup = await Vue.serviceAgent.createGroupChat();
     },
   },
 } as Module<{

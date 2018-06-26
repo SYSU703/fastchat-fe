@@ -67,6 +67,7 @@ interface ChatService {
   getChatMessages(chatId: string): Promise<Response<Message[]>>;
   getChatMembers(chatId: string): Promise<Response<UserComplete[]>>;
   sendMessage(chatId: string, from: string, content: string): Promise<Response<Message>>;
+  createGroupChat(): Promise<Response<ChatBasic>>;
 }
 
 /**

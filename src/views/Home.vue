@@ -23,21 +23,26 @@
           <Menu theme="light"
                 width="auto"
                 :open-names="['friends']"
-                @on-select="OnSelectFriend">
+                @on-select="onSelectItem">
             <Submenu name="friends">
               <template slot="title">
                 <Icon type="ios-navigate" /> 好友
               </template>
               <MenuItem v-for="friend of friendList"
-                        :key="friend.friendInfo.userName"
-                        :name="friend.friendInfo.userName">{{ friend.friendInfo.nickname }}</MenuItem>
+                        :key="friend.chatInfo.chatId"
+                        :name="friend.chatInfo.chatId">{{ friend.friendInfo.nickname }}</MenuItem>
             </Submenu>
             <Submenu name="groups">
               <template slot="title">
-                <Icon type="ios-keypad" /> 群组
+                <Icon type="ios-keypad" /> 群聊
               </template>
-              <MenuItem name="g1">群组 1</MenuItem>
-              <MenuItem name="g2">群组 2</MenuItem>
+              <MenuItem v-for="gChat of groupChats"
+                        :key="gChat.chatId"
+                        :name="gChat.chatId">{{ gChat.chatName }}</MenuItem>
+              <Button type="dashed"
+                      long
+                      icon="ios-plus-empty"
+                      @click="createGroup">新建群聊</Button>
             </Submenu>
           </Menu>
         </Sider>
@@ -45,7 +50,12 @@
                 v-if="chatInfo">
 
           <Content class="home-chat-header">
-            <h2>与 {{ membersWithoutMe[0]?membersWithoutMe[0].userName:'' }} 的聊天</h2>
+            <h2 v-if="chatInfo&&!chatInfo.isGroup">
+              与 {{ membersWithoutMe[0]?membersWithoutMe[0].userName:'' }} 的聊天
+            </h2>
+            <h2 v-if="chatInfo && chatInfo.isGroup">
+              {{ chatInfo.chatName }}
+            </h2>
           </Content>
 
           <Content class="home-chat-content"
@@ -135,6 +145,7 @@ import {
   ChatBasic,
   ChatComplete,
   FriendWithChatInfo,
+  messageHasChanged,
 } from '@/models';
 import vuex from '@/store';
 import MessageWindow from '@/components/MessageWindow.vue';
@@ -169,6 +180,9 @@ export default Vue.extend({
     chatInfo(): ChatComplete | null {
       return this.$store.state.chats.currentChat;
     },
+    groupChats(): ChatBasic[] {
+      return this.$store.getters.groupChats;
+    },
   },
   watch: {
     chatInfo: function(
@@ -178,7 +192,7 @@ export default Vue.extend({
       if (!newVal || !this.$refs.container) return;
       if (
         !oldVal ||
-        newVal.lastestMessage.messageId !== oldVal.lastestMessage.messageId
+        messageHasChanged(oldVal.lastestMessage, newVal.lastestMessage)
       ) {
         // 消息更新时，窗口滚动到最下方
         this.$nextTick(() => {
@@ -199,12 +213,11 @@ export default Vue.extend({
           break;
       }
     },
-    OnSelectFriend(friendName: string) {
-      const friend = this.$store.state.friends.friends.get(friendName);
-      if (!friend) {
-        throw new Error(`找不到好友${friendName}`);
-      }
-      this.$store.dispatch('loadOneChat', friend.chatId);
+    onSelectItem(itemName: string) {
+      this.$store.dispatch('loadOneChat', itemName);
+    },
+    createGroup() {
+      this.$store.dispatch('createGroupChat');
     },
     async OnInputKeydown(event: KeyboardEvent) {
       if (event.keyCode === 13 && event.ctrlKey) {
