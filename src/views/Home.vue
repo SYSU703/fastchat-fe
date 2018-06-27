@@ -31,6 +31,56 @@
               <MenuItem v-for="friend of friendList"
                         :key="friend.chatInfo.chatId"
                         :name="friend.chatInfo.chatId">{{ friend.friendInfo.nickname }}</MenuItem>
+              <Button type="dashed"
+                      long
+                      icon="ios-plus-empty"
+                      @click="addFriendModal = true;">添加好友</Button>
+              <Modal class="add-friend-modal"
+                     v-model="addFriendModal"
+                     title="添加好友">
+                <Row type="flex"
+                     align="middle">
+                  <Col span="4"
+                       style="text-align:center;">
+                  <label for="user-search">选择用户</label>
+                  </Col>
+                  <Col span="18">
+                  <Select id="user-search"
+                          v-model="addFriendUserNames"
+                          filterable
+                          multiple
+                          remote
+                          placeholder="搜索用户名、昵称"
+                          :remote-method="queryUser"
+                          :loading="queryUserLoading">
+                    <Option v-for="user in queryUserResult"
+                            :key="user.userName"
+                            :value="user.userName"
+                            :label="user.userName">
+                      用户名: {{ user.userName }} - 昵称: {{ user.nickname }}
+                    </Option>
+                  </Select>
+                  </Col>
+                </Row>
+                <Row type="flex"
+                     align="middle">
+                  <Col span="4"
+                       style="text-align:center;">
+                  <label for="user-search">验证消息</label>
+                  </Col>
+                  <Col>
+                  <Input v-model="friendReqMsg"
+                         placeholder="我是..."></Input>
+                  </Col>
+                </Row>
+
+                <div slot="footer">
+                  <Button type="text">取消</Button>
+                  <Button type="primary"
+                          :disabled="addFriendUserNames.length===0"
+                          @click="sendFriendReq">发送请求</Button>
+                </div>
+              </Modal>
             </Submenu>
             <Submenu name="groups">
               <template slot="title">
@@ -67,8 +117,8 @@
 
           <Content class="home-chat-input">
             <Input class="chat-textarea"
-                   v-model="input"
-                   @on-keydown="OnInputKeydown"
+                   v-model="chatInput"
+                   @on-keydown="onInputKeydown"
                    type="textarea"
                    :rows="5"
                    placeholder="Enter换行，Ctrl+Enter发送"></Input>
@@ -134,6 +184,10 @@
 
           /deep/ textarea
             resize none
+
+.add-friend-modal
+  .ivu-row-flex
+    margin-bottom 12px
 </style>
 
 <script lang="ts">
@@ -156,7 +210,12 @@ export default Vue.extend({
   },
   data() {
     return {
-      input: '',
+      chatInput: '',
+      addFriendModal: false,
+      queryUserLoading: false,
+      addFriendUserNames: [],
+      queryUserResult: [] as UserComplete[],
+      friendReqMsg: '',
     };
   },
   computed: {
@@ -219,11 +278,36 @@ export default Vue.extend({
     createGroup() {
       this.$store.dispatch('createGroupChat');
     },
-    async OnInputKeydown(event: KeyboardEvent) {
+    async queryUser(query: string) {
+      this.queryUserLoading = true;
+      const res = await this.$serviceAgent.findUser(query);
+      this.queryUserLoading = false;
+      this.queryUserResult = res.data;
+    },
+    async onInputKeydown(event: KeyboardEvent) {
       if (event.keyCode === 13 && event.ctrlKey) {
-        await this.$store.dispatch('sendMessage', this.input);
-        this.input = '';
+        await this.$store.dispatch('sendMessage', this.chatInput);
+        this.chatInput = '';
       }
+    },
+    async sendFriendReq() {
+      this.addFriendUserNames.forEach(async name => {
+        try {
+          const res = await this.$serviceAgent.requestAddFriend(
+            name,
+            this.friendReqMsg,
+          );
+          if (res.success === true) {
+            this.$Message.success(`${name} 的好友请求发送成功`);
+          }
+        } catch (error) {
+          if (error.response.data)
+            this.$Message.error(
+              `${name} 的好友请求发送失败：${error.response.data.msg}`,
+            );
+          else throw error;
+        }
+      });
     },
   },
   async beforeRouteEnter(to, from, next) {

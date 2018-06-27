@@ -1,7 +1,6 @@
 import {
   RegisterInfo,
   LoginCredentials,
-  UserName,
   UserComplete,
   Message,
   ChatBasic,
@@ -94,7 +93,10 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
     return res.data;
   }
 
-  public requestAddFriend(target: UserName) { return 0 as any; }
+  public async requestAddFriend(targetUserName: string, msg: string): Promise<Response<undefined>> {
+    const res = await friendsRS.post('requests', { to: targetUserName, msg });
+    return res.data;
+  }
 
   public async getChatMembers(chatId: string) {
     const res = await chatsRS.get(`${chatId}/members`);
@@ -111,6 +113,15 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
   }
   public async createGroupChat(): Promise<Response<ChatBasic>> {
     const res = await chatsRS.post('', { chatName: '默认群名' });
+    return res.data;
+  }
+
+  public async findUser(contain: string): Promise<Response<UserComplete[]>> {
+    const res = await usersRS.get('', {
+      params: {
+        contain,
+      },
+    });
     return res.data;
   }
 }

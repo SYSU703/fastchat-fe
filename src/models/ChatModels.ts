@@ -1,9 +1,9 @@
-import { UserComplete, UserName } from '@/models';
+import { UserComplete } from '@/models';
 
 export interface Message {
   messageId: string;  // auto increment。方便比较消息的新旧。
   content: string;
-  from: UserName;
+  from: string;
 }
 
 export function messageHasChanged(message1: Message | null, message2: Message | null) {

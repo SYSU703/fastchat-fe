@@ -1,7 +1,6 @@
 import {
   RegisterInfo,
   LoginCredentials,
-  UserName,
   UserComplete,
   Message,
   FriendBasic,
@@ -54,12 +53,12 @@ interface UserService {
    * @description 注册成功将直接跳转到登陆，不管成功还是失败都展示message
    */
   register(registerInfo: RegisterInfo): Promise<Response<undefined>>;
+  findUser(contain: string): Promise<Response<UserComplete[]>>;
 }
 
 interface FriendService {
   getFriends(): Promise<Response<FriendBasic[]>>;
-  requestAddFriend(target: UserName): Promise<Response<undefined>>;
-
+  requestAddFriend(targetUserName: string, msg: string): Promise<Response<undefined>>;
 }
 
 interface ChatService {
