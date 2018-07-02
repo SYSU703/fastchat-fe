@@ -2,7 +2,7 @@ import {
   RegisterInfo,
   LoginCredentials,
   UserComplete,
-  Message,
+  AddFriendRequest,
   ChatBasic,
   FriendBasic,
   chatListhasChange,
@@ -95,6 +95,21 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
 
   public async requestAddFriend(targetUserName: string, msg: string): Promise<Response<undefined>> {
     const res = await friendsRS.post('requests', { to: targetUserName, msg });
+    return res.data;
+  }
+
+  public async getFriendRequests(): Promise<Response<AddFriendRequest[]>> {
+    const res = await friendsRS.get<Response<AddFriendRequest[]>>('requests');
+    for (const req of res.data.data) {
+      // js的timestamp以毫秒为精度，而不是秒
+      req.time = new Date(+(req.time + '000'));
+    }
+    return res.data;
+  }
+
+  public async responseFriendRequest(reqId: string, accept: boolean): Promise<Response<undefined>> {
+    const res = await friendsRS.patch(`requests/${reqId}`,
+      { state: accept ? 'accepted' : 'rejected' });
     return res.data;
   }
 

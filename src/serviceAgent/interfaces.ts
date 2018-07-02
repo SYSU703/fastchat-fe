@@ -5,7 +5,7 @@ import {
   Message,
   FriendBasic,
   ChatBasic,
-  ChatComplete,
+  AddFriendRequest,
 } from '@/models';
 import _Vue from 'vue';
 
@@ -59,6 +59,8 @@ interface UserService {
 interface FriendService {
   getFriends(): Promise<Response<FriendBasic[]>>;
   requestAddFriend(targetUserName: string, msg: string): Promise<Response<undefined>>;
+  getFriendRequests(): Promise<Response<AddFriendRequest[]>>;
+  responseFriendRequest(reqId: string, accept: boolean): Promise<Response<undefined>>;
 }
 
 interface ChatService {

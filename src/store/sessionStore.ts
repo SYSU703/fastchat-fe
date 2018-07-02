@@ -26,6 +26,7 @@ export default {
       dispatch('getChats');
       dispatch('getFriends');
       dispatch('subscribeChanges');
+      dispatch('getFriendRequests');
       return res;
     },
     async logout({ state, commit, dispatch }) {
@@ -48,6 +49,7 @@ export default {
         dispatch('getChats');
         dispatch('getFriends');
         dispatch('subscribeChanges');
+        dispatch('getFriendRequests');
         return resumedUser;
       } else {
         return state.currentUser;

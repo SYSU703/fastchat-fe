@@ -5,17 +5,34 @@
         <Menu class="home-nav-menu"
               mode="horizontal"
               theme="dark"
-              active-name="home"
               @on-select="OnSelectNav">
           <MenuItem class="home-nav-item"
-                    name="home">
-          <Icon type="ios-navigate" /> 主页
+                    name="notice">
+          <Badge dot
+                 :count="0"
+                 style="line-height:inherit;">
+            <Icon type="ios-bell-outline"
+                  size="16" /> 通知
+          </Badge>
           </MenuItem>
           <MenuItem class="home-nav-item"
                     name="logout">
           <Icon type="log-out" /> 登出
           </MenuItem>
         </Menu>
+
+        <Modal class="notice-modal"
+               v-model="noticeModal"
+               title="待处理的请求"
+               width="90">
+          <div class="notice">
+            <Table stripe
+                   :columns="friendReqColumns"
+                   :data="pendingFriendRequests"
+                   no-data-text="没有待处理的请求" />
+          </div>
+          <div slot="footer" />
+        </Modal>
 
       </Header>
       <Layout class="home-body">
@@ -75,7 +92,8 @@
                 </Row>
 
                 <div slot="footer">
-                  <Button type="text">取消</Button>
+                  <Button type="text"
+                          @click="addFriendModal=false;">取消</Button>
                   <Button type="primary"
                           :disabled="addFriendUserNames.length===0"
                           @click="sendFriendReq">发送请求</Button>
@@ -188,6 +206,11 @@
 .add-friend-modal
   .ivu-row-flex
     margin-bottom 12px
+
+.notice-modal
+  /deep/ .ivu-modal-footer
+    padding 0
+    border none
 </style>
 
 <script lang="ts">
@@ -200,6 +223,7 @@ import {
   ChatComplete,
   FriendWithChatInfo,
   messageHasChanged,
+  AddFriendRequest,
 } from '@/models';
 import vuex from '@/store';
 import MessageWindow from '@/components/MessageWindow.vue';
@@ -212,10 +236,126 @@ export default Vue.extend({
     return {
       chatInput: '',
       addFriendModal: false,
+      noticeModal: false,
       queryUserLoading: false,
       addFriendUserNames: [],
       queryUserResult: [] as UserComplete[],
       friendReqMsg: '',
+      friendReqColumns: [
+        {
+          title: '发送者',
+          render: (h: any, params: { row: AddFriendRequest }): any => {
+            return h(
+              'span',
+              params.row.from === (this as any).user.userName
+                ? '我'
+                : `${params.row.fromNickname}(${params.row.from})`,
+            );
+          },
+        },
+        {
+          title: '接收者',
+          key: 'to',
+          render: (h: any, params: { row: AddFriendRequest }): any => {
+            return h(
+              'span',
+              params.row.to === (this as any).user.userName
+                ? '我'
+                : `${params.row.toNickname}(${params.row.to})`,
+            );
+          },
+        },
+        {
+          title: '请求日期',
+          render: (h: any, params: { row: AddFriendRequest }): any => {
+            return h('span', (this as any).formatDateTime(params.row.time));
+          },
+        },
+        {
+          title: '验证消息',
+          render: (h: any, params: { row: AddFriendRequest }) => {
+            const msg = params.row.message;
+            return h('span', msg ? msg : '无验证消息');
+          },
+        },
+        {
+          title: '操作',
+          render: (h: any, params: { row: AddFriendRequest }) => {
+            if (params.row.to !== (this as any).user.userName) {
+              return h('span', '等待对方处理');
+            }
+            return h('div', [
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'primary',
+                  },
+                  style: {
+                    marginRight: '12px',
+                  },
+                  on: {
+                    click: async () => {
+                      const success = await this.$store.dispatch(
+                        'responseFriendRequest',
+                        {
+                          reqId: params.row.reqId,
+                          accept: true,
+                        },
+                      );
+                      if (success)
+                        this.$Message.success(
+                          `已经接受${params.row.fromNickname}(${
+                            params.row.from
+                          })的好友请求`,
+                        );
+                      else
+                        this.$Message.error(
+                          `发生错误，接受${params.row.fromNickname}(${
+                            params.row.from
+                          })的好友请求失败`,
+                        );
+                    },
+                  },
+                },
+                '同意',
+              ),
+              h(
+                'Button',
+                {
+                  props: {
+                    type: 'warning',
+                  },
+                  on: {
+                    click: async () => {
+                      const success = await this.$store.dispatch(
+                        'responseFriendRequest',
+                        {
+                          reqId: params.row.reqId,
+                          accept: false,
+                        },
+                      );
+                      if (success)
+                        this.$Message.success(
+                          `已经拒绝${params.row.fromNickname}(${
+                            params.row.from
+                          })的好友请求`,
+                        );
+                      else
+                        this.$Message.error(
+                          `发生错误，拒绝${params.row.fromNickname}(${
+                            params.row.from
+                          })的好友请求失败`,
+                        );
+                    },
+                  },
+                },
+                '拒绝',
+              ),
+            ]);
+          },
+        },
+      ],
     };
   },
   computed: {
@@ -242,6 +382,9 @@ export default Vue.extend({
     groupChats(): ChatBasic[] {
       return this.$store.getters.groupChats;
     },
+    pendingFriendRequests(): AddFriendRequest[] {
+      return this.$store.state.friends.pendingRequests;
+    },
   },
   watch: {
     chatInfo: function(
@@ -267,7 +410,9 @@ export default Vue.extend({
         case 'logout':
           this.$router.push({ name: 'login' });
           break;
-
+        case 'notice':
+          this.noticeModal = true;
+          break;
         default:
           break;
       }
@@ -308,6 +453,19 @@ export default Vue.extend({
           else throw error;
         }
       });
+    },
+    formatDateTime(d: Date) {
+      const datestring =
+        d.getFullYear() +
+        '-' +
+        ('0' + (d.getMonth() + 1)).slice(-2) +
+        '-' +
+        ('0' + d.getDate()).slice(-2) +
+        ' ' +
+        ('0' + d.getHours()).slice(-2) +
+        ':' +
+        ('0' + d.getMinutes()).slice(-2);
+      return datestring;
     },
   },
   async beforeRouteEnter(to, from, next) {

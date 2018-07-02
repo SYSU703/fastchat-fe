@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { FriendWithChatInfo, FriendBasic, ChatBasic } from '@/models';
+import { FriendWithChatInfo, FriendBasic, AddFriendRequest } from '@/models';
 import { Module } from 'vuex';
 
 export default {
@@ -7,6 +7,7 @@ export default {
     // https://stackoverflow.com/a/45441321
     friends: new Map() as Map<string, FriendBasic>, // 以好友userName为key
     friendsChangeTracker: 1,
+    pendingRequests: [] as AddFriendRequest[],
   },
   getters: {
     // 如果friends先加载，chat尚未加载完成，则会出现chats与friends不一致的情况：
@@ -40,6 +41,14 @@ export default {
       });
       state.friends = map;
     },
+    loadPendingFriendRequests(state, requests: AddFriendRequest[] | null) {
+      if (!requests) { requests = []; }
+      state.pendingRequests = [...requests];
+    },
+    delOneFriendRequest(state, reqId: string) {
+      state.pendingRequests =
+        state.pendingRequests.filter((req) => req.reqId !== reqId);
+    },
   },
   actions: {
     async getFriends({ state, commit }) {
@@ -51,9 +60,21 @@ export default {
     },
     async resetFriends({ commit }) {
       commit('loadFriends', null);
+      commit('loadPendingFriendRequests', null);
+    },
+    async getFriendRequests({ commit }) {
+      const res = await Vue.serviceAgent.getFriendRequests();
+      commit('loadPendingFriendRequests',
+        res.data.filter((req) => req.state === 'pending'));
+    },
+    async responseFriendRequest({ commit }, { reqId, accept }: { reqId: string, accept: boolean }) {
+      const res = await Vue.serviceAgent.responseFriendRequest(reqId, accept);
+      if (res.success) { commit('delOneFriendRequest', reqId); }
+      return res.success;
     },
   },
 } as Module<{
   friends: Map<string, FriendBasic>;
   friendsChangeTracker: number;
+  pendingRequests: AddFriendRequest[];
 }, any>;
