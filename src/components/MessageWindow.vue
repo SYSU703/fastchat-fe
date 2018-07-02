@@ -4,9 +4,7 @@
          :key="message.messageId"
          :class="{ isMyMessage: myUserName===message.from }"
          class="message-row">
-      <div class="message-box">
-        {{ message.content }}
-      </div>
+      <div class="message-box">{{ message.content }}</div>
     </div>
   </Card>
 </template>
@@ -23,6 +21,7 @@
     border 1px solid black
     padding 3px 10px
     max-width 50%
+    white-space pre-line
 </style>
 
 <script lang="ts">
