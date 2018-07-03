@@ -139,4 +139,19 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
     });
     return res.data;
   }
+
+  public async changeUserInfo(info: UserComplete): Promise<Response<undefined>> {
+    const res = await usersRS.patch<Response<undefined>>(info.userName, info);
+    if (res.data.success) {
+      // 修改成功以后要更新本地存储
+      const oldSession = window.sessionStorage.getItem('session');
+      if (!oldSession) { throw new Error('oldSession not exist!'); }
+      const { jwt, oldInfo } = JSON.parse(oldSession);
+      window.sessionStorage.setItem('session', JSON.stringify({
+        jwt,
+        userInfo: info,
+      }));
+    }
+    return res.data;
+  }
 }

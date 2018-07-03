@@ -16,6 +16,12 @@
             </a>
           </div>
           <div class="home-nav-item">
+            <a @click="showConfigInfoModal=true;">
+              <Icon type="ios-gear-outline" />
+              <span>修改</span>
+            </a>
+          </div>
+          <div class="home-nav-item">
             <a @click="navLogout">
               <Icon type="log-out" />
               <span>登出</span>
@@ -23,6 +29,10 @@
           </div>
         </div>
         <FriendRequestModal v-model="showFriendRequestModal" />
+        <UserInfoModal v-model="showConfigInfoModal"
+                       :editable="true"
+                       :user-info="user"
+                       @submitUserInfo="submitUserInfo" />
       </Header>
       <Layout class="home-body">
         <Sider class="home-sider">
@@ -67,6 +77,21 @@
             <h2 v-if="chatInfo && chatInfo.isGroup">
               {{ chatInfo.chatName }}
             </h2>
+            <Dropdown class="chat-dropdown"
+                      trigger="click"
+                      placement="bottom-end"
+                      @on-click="showUserInfoModal=true;">
+              <Button type="ghost"
+                      icon="navicon-round"
+                      size="small">更多</Button>
+              <DropdownMenu slot="list">
+                <DropdownItem>查看好友信息</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+
+            <UserInfoModal v-model="showUserInfoModal"
+                           :editable="false"
+                           :user-info="membersWithoutMe[0]" />
           </Content>
 
           <Content class="home-chat-content"

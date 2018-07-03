@@ -13,18 +13,22 @@ import vuex from '@/store';
 import MessageWindow from '@/components/MessageWindow.vue';
 import FriendRequestModal from '@/components/FriendRequestModal.vue';
 import AddFriendModal from '@/components/AddFriendModal.vue';
+import UserInfoModal from '@/components/UserInfoModal.vue';
 
 export default Vue.extend({
   components: {
     MessageWindow,
     FriendRequestModal,
     AddFriendModal,
+    UserInfoModal,
   },
   data() {
     return {
       chatInput: '',
       addFriendModal: false,
       showFriendRequestModal: false,
+      showUserInfoModal: false,
+      showConfigInfoModal: false,
     };
   },
   computed: {
@@ -84,6 +88,23 @@ export default Vue.extend({
       if (event.keyCode === 13 && event.ctrlKey) {
         await this.$store.dispatch('sendMessage', this.chatInput);
         this.chatInput = '';
+      }
+    },
+    async submitUserInfo(info: UserComplete) {
+      try {
+        const res = await this.$store.dispatch('changeUserInfo', info);
+        if (res.success) {
+          this.$Message.success(`修改成功`);
+          this.showConfigInfoModal = false;
+        }
+      } catch (error) {
+        if (error.response &&
+          error.response.data &&
+          error.response.data.data.result === 'exists') {
+          this.$Message.error(`修改失败，${error.response.data.data.field}已经存在`);
+        } else {
+          this.$Message.error(`修改失败`);
+        }
       }
     },
   },

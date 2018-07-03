@@ -31,10 +31,11 @@
          align="middle">
       <Col span="4"
            style="text-align:center;">
-      <label for="user-search">验证消息</label>
+      <label for="friend-req-msg">验证消息</label>
       </Col>
-      <Col>
-      <Input v-model="friendReqMsg"
+      <Col span="18">
+      <Input id="friend-req-msg"
+             v-model="friendReqMsg"
              placeholder="我是..."></Input>
       </Col>
     </Row>

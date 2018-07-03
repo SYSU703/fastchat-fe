@@ -66,5 +66,12 @@ export default {
     unSubscribeChanges() {
       Vue.serviceAgent.unsubscribeUpdate();
     },
+    async changeUserInfo({ commit }, info: UserComplete) {
+      const res = await Vue.serviceAgent.changeUserInfo(info);
+      if (res.success) {
+        commit('userChange', info);
+      }
+      return res;
+    },
   },
 } as Module<{ currentUser: UserComplete | null }, {}>;
