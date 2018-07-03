@@ -42,8 +42,10 @@
 
     <div slot="footer">
       <Button type="text"
-              @click="addFriendModal=false;">取消</Button>
+              size="large"
+              @click="$emit('change', false);">取消</Button>
       <Button type="primary"
+              size="large"
               :disabled="addFriendUserNames.length===0"
               @click="sendFriendReq">发送请求</Button>
     </div>

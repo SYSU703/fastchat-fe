@@ -1,8 +1,11 @@
 <template>
   <Modal class="user-info-modal"
+         :class="{ editable: editable }"
          title="用户信息"
          :value="isShow"
-         @input="$emit('change', $event);">
+         @input="$emit('change', $event);"
+         ok-text="提交"
+         @on-ok="$emit('submitUserInfo', Object.assign({}, editingUser));">
     <Row type="flex"
          align="middle">
       <Col span="4"
@@ -60,13 +63,6 @@
 
     <div v-if="!editable"
          slot="footer" />
-    <div v-else
-         slot="footer"
-         class="custom-footer">
-      <Button @click="$emit('change', false);">取消</Button>
-      <Button type="primary"
-              @click="$emit('submitUserInfo', Object.assign({}, editingUser));">提交</Button>
-    </div>
   </Modal>
 </template>
 
@@ -75,14 +71,9 @@
   .ivu-row-flex
     margin-bottom 12px
 
-  /deep/ .ivu-modal-footer
+  &:not(.editable) /deep/ .ivu-modal-footer
     padding 0
     border none
-
-  .custom-footer
-    border-top 1px solid #e9eaec
-    padding 12px 18px 12px 18px
-    text-align right
 </style>
 
 
