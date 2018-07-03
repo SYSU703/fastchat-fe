@@ -14,6 +14,7 @@ import MessageWindow from '@/components/MessageWindow.vue';
 import FriendRequestModal from '@/components/FriendRequestModal.vue';
 import AddFriendModal from '@/components/AddFriendModal.vue';
 import UserInfoModal from '@/components/UserInfoModal.vue';
+import ChangePasswordModal from '@/components/ChangePasswordModal.vue';
 
 export default Vue.extend({
   components: {
@@ -21,6 +22,7 @@ export default Vue.extend({
     FriendRequestModal,
     AddFriendModal,
     UserInfoModal,
+    ChangePasswordModal,
   },
   data() {
     return {
@@ -29,6 +31,7 @@ export default Vue.extend({
       showFriendRequestModal: false,
       showUserInfoModal: false,
       showConfigInfoModal: false,
+      showChangePasswordModal: false,
     };
   },
   computed: {
@@ -91,6 +94,7 @@ export default Vue.extend({
           this.showFriendRequestModal = true;
           break;
         case 'changePassword':
+          this.showChangePasswordModal = true;
           break;
         default:
           break;
@@ -113,7 +117,6 @@ export default Vue.extend({
         const res = await this.$store.dispatch('changeUserInfo', info);
         if (res.success) {
           this.$Message.success(`修改成功`);
-          this.showConfigInfoModal = false;
         }
       } catch (error) {
         if (error.response &&

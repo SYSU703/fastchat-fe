@@ -55,6 +55,7 @@ interface UserService {
   register(registerInfo: RegisterInfo): Promise<Response<undefined>>;
   findUser(contain: string): Promise<Response<UserComplete[]>>;
   changeUserInfo(info: UserComplete): Promise<Response<undefined>>;
+  changePassword(userName: string, oldP: string, newP: string): Promise<Response<undefined>>;
 }
 
 interface FriendService {

@@ -48,6 +48,7 @@
                        :editable="true"
                        :user-info="user"
                        @submitUserInfo="submitUserInfo" />
+        <ChangePasswordModal v-model="showChangePasswordModal" />
       </Header>
       <Layout class="home-body">
         <Sider class="home-sider">

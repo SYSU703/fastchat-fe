@@ -141,7 +141,7 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
   }
 
   public async changeUserInfo(info: UserComplete): Promise<Response<undefined>> {
-    const res = await usersRS.patch<Response<undefined>>(info.userName, info);
+    const res = await usersRS.patch<Response<undefined>>(`${info.userName}/info`, info);
     if (res.data.success) {
       // 修改成功以后要更新本地存储
       const oldSession = window.sessionStorage.getItem('session');
@@ -152,6 +152,12 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
         userInfo: info,
       }));
     }
+    return res.data;
+  }
+
+  public async changePassword(userName: string, oldP: string, newP: string): Promise<Response<undefined>> {
+    const res = await usersRS.patch<Response<undefined>>(`${userName}/password`,
+      { oldP, newP });
     return res.data;
   }
 }
