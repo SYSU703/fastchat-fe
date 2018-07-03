@@ -79,10 +79,24 @@ export default Vue.extend({
     },
   },
   methods: {
-    navLogout() {
-      this.$router.push({ name: 'login' });
+    onSelectNavItem(name: string) {
+      switch (name) {
+        case 'logout':
+          this.$router.push({ name: 'login' });
+          break;
+        case 'changeInfo':
+          this.showConfigInfoModal = true;
+          break;
+        case 'showFriendRequests':
+          this.showFriendRequestModal = true;
+          break;
+        case 'changePassword':
+          break;
+        default:
+          break;
+      }
     },
-    onSelectItem(itemName: string) {
+    onSelectChatItem(itemName: string) {
       this.$store.dispatch('loadOneChat', itemName);
     },
     createGroup() {

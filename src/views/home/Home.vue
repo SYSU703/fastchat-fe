@@ -5,26 +5,41 @@
         <div class="userInfo">当前用户：{{ user.nickname }}({{ user.userName }})</div>
         <div class="home-nav-menu">
           <div class="home-nav-item">
-            <a @click="showFriendRequestModal=true;">
-              <Badge dot
-                     :count="pendingFriendRequestsToMe.length"
-                     style="line-height: inherit; vertical-align: inherit;">
-                <Icon type="ios-bell-outline"
-                      size="18" />
-                <span class="nav-label">好友请求</span>
-              </Badge>
-            </a>
+            <Dropdown trigger="click"
+                      @on-click="onSelectNavItem">
+              <a>
+                <Badge dot
+                       :count="pendingFriendRequestsToMe.length"
+                       style="line-height: inherit; vertical-align: inherit;">
+                  <span class="nav-label">通知</span>
+                  <!-- <Icon type="ios-bell-outline"
+                        size="18" /> -->
+                  <Icon type="arrow-down-b" />
+                </Badge>
+              </a>
+              <DropdownMenu slot="list">
+                <DropdownItem name="showFriendRequests">好友请求</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
           </div>
           <div class="home-nav-item">
-            <a @click="showConfigInfoModal=true;">
-              <Icon type="ios-gear-outline" />
-              <span class="nav-label">修改信息</span>
-            </a>
+            <Dropdown trigger="click"
+                      @on-click="onSelectNavItem">
+              <a>
+                <span class="nav-label">修改</span>
+                <Icon type="arrow-down-b" />
+              </a>
+              <DropdownMenu slot="list">
+                <DropdownItem name="changeInfo">修改信息</DropdownItem>
+                <DropdownItem name="changePassword">修改密码</DropdownItem>
+              </DropdownMenu>
+            </Dropdown>
+
           </div>
           <div class="home-nav-item">
-            <a @click="navLogout">
-              <Icon type="log-out" />
+            <a @click="onSelectNavItem('logout');">
               <span class="nav-label">登出</span>
+              <Icon type="log-out" />
             </a>
           </div>
         </div>
@@ -39,7 +54,7 @@
           <Menu theme="light"
                 width="auto"
                 :open-names="['friends']"
-                @on-select="onSelectItem">
+                @on-select="onSelectChatItem">
             <Submenu name="friends">
               <template slot="title">
                 <Icon type="ios-navigate" /> 好友
