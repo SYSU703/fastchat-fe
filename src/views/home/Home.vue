@@ -11,20 +11,20 @@
                      style="line-height: inherit; vertical-align: inherit;">
                 <Icon type="ios-bell-outline"
                       size="18" />
-                <span>好友请求</span>
+                <span class="nav-label">好友请求</span>
               </Badge>
             </a>
           </div>
           <div class="home-nav-item">
             <a @click="showConfigInfoModal=true;">
               <Icon type="ios-gear-outline" />
-              <span>修改信息</span>
+              <span class="nav-label">修改信息</span>
             </a>
           </div>
           <div class="home-nav-item">
             <a @click="navLogout">
               <Icon type="log-out" />
-              <span>登出</span>
+              <span class="nav-label">登出</span>
             </a>
           </div>
         </div>
