@@ -7,18 +7,18 @@
           <div class="home-nav-item">
             <a @click="showFriendRequestModal=true;">
               <Badge dot
-                     :count="10"
+                     :count="pendingFriendRequestsToMe.length"
                      style="line-height: inherit; vertical-align: inherit;">
                 <Icon type="ios-bell-outline"
                       size="18" />
-                <span>通知</span>
+                <span>好友请求</span>
               </Badge>
             </a>
           </div>
           <div class="home-nav-item">
             <a @click="showConfigInfoModal=true;">
               <Icon type="ios-gear-outline" />
-              <span>修改</span>
+              <span>修改信息</span>
             </a>
           </div>
           <div class="home-nav-item">

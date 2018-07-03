@@ -55,6 +55,10 @@ export default Vue.extend({
     groupChats(): ChatBasic[] {
       return this.$store.getters.groupChats;
     },
+    pendingFriendRequestsToMe(): AddFriendRequest[] {
+      return (this.$store.state.friends.pendingRequests as AddFriendRequest[])
+        .filter((req) => this.user && req.to === this.user.userName);
+    },
   },
   watch: {
     chatInfo(
