@@ -1,0 +1,60 @@
+.home
+  // 将height 100%从<html>一直传递下去，使得整个页面恰好占满屏幕
+  height 100%
+  position relative
+  overflow hidden
+
+  .home-layout
+    height 100%
+
+    .home-header
+      padding 0 24px
+      color white
+      font-size 16px
+
+      .userInfo
+        display inline-block
+
+      .home-nav-menu
+        display inline-block
+        float right
+        height 100%
+
+        .home-nav-item
+          margin-left 24px
+          display inline
+          a
+            line-height 1
+            span
+              margin-left 2px
+
+    .home-body
+      height 100%
+
+      .home-sider
+        background-color #fff
+
+      .home-chat
+        padding 0 24px 24px 24px
+        overflow hidden
+
+        .home-chat-header
+          flex 0 0 auto
+          margin 24px 0
+
+        .home-chat-content
+          background-color #fff
+          overflow auto
+          display flex
+          flex-direction column
+
+          .message-window
+            flex-grow 1
+
+        .home-chat-input
+          flex 0 0 auto
+
+          /deep/ textarea
+            resize none
+
+
