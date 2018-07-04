@@ -55,7 +55,7 @@
           <Menu theme="light"
                 width="auto"
                 :open-names="['friends']"
-                @on-select="onSelectChatItem">
+                @on-select="$store.dispatch('loadOneChat', $event);">
             <Submenu name="friends">
               <template slot="title">
                 <Icon type="ios-navigate" /> 好友
@@ -79,7 +79,7 @@
               <Button type="dashed"
                       long
                       icon="ios-plus-empty"
-                      @click="createGroup">新建群聊</Button>
+                      @click="$store.dispatch('createGroupChat');">新建群聊</Button>
             </Submenu>
           </Menu>
         </Sider>
@@ -96,12 +96,15 @@
             <Dropdown class="chat-dropdown"
                       trigger="click"
                       placement="bottom-end"
-                      @on-click="showUserInfoModal=true;">
+                      @on-click="onSelectChatOption">
               <Button type="ghost"
                       icon="navicon-round"
                       size="small">更多</Button>
               <DropdownMenu slot="list">
-                <DropdownItem>查看好友信息</DropdownItem>
+                <DropdownItem v-if="!chatInfo.isGroup"
+                              name="showFriendInfo">查看好友信息</DropdownItem>
+                <DropdownItem v-else
+                              name="showChatMembers">查看群聊成员</DropdownItem>
               </DropdownMenu>
             </Dropdown>
 

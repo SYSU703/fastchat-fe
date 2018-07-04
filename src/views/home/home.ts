@@ -100,11 +100,16 @@ export default Vue.extend({
           break;
       }
     },
-    onSelectChatItem(itemName: string) {
-      this.$store.dispatch('loadOneChat', itemName);
-    },
-    createGroup() {
-      this.$store.dispatch('createGroupChat');
+    onSelectChatOption(name: string) {
+      switch (name) {
+        case 'showFriendInfo':
+          this.showUserInfoModal = true;
+          break;
+        case 'showChatMembers':
+          break;
+        default:
+          break;
+      }
     },
     async onInputKeydown(event: KeyboardEvent) {
       if (event.keyCode === 13 && event.ctrlKey) {
