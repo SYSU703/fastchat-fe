@@ -15,6 +15,7 @@ import FriendRequestModal from '@/components/FriendRequestModal.vue';
 import AddFriendModal from '@/components/AddFriendModal.vue';
 import UserInfoModal from '@/components/UserInfoModal.vue';
 import ChangePasswordModal from '@/components/ChangePasswordModal.vue';
+import ChatMembersModal from '@/components/ChatMembersModal.vue';
 
 export default Vue.extend({
   components: {
@@ -23,6 +24,7 @@ export default Vue.extend({
     AddFriendModal,
     UserInfoModal,
     ChangePasswordModal,
+    ChatMembersModal,
   },
   data() {
     return {
@@ -32,6 +34,7 @@ export default Vue.extend({
       showUserInfoModal: false,
       showConfigInfoModal: false,
       showChangePasswordModal: false,
+      showChatMembersModal: false,
     };
   },
   computed: {
@@ -106,6 +109,7 @@ export default Vue.extend({
           this.showUserInfoModal = true;
           break;
         case 'showChatMembers':
+          this.showChatMembersModal = true;
           break;
         default:
           break;

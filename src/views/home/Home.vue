@@ -111,6 +111,7 @@
             <UserInfoModal v-model="showUserInfoModal"
                            :editable="false"
                            :user-info="membersWithoutMe[0]" />
+            <ChatMembersModal v-model="showChatMembersModal" />
           </Content>
 
           <Content class="home-chat-content"
