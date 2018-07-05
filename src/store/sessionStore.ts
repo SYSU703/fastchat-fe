@@ -75,5 +75,12 @@ export default {
       }
       return res;
     },
+    async changePassword(
+      { state },
+      { oldP, newP }: { oldP: string, newP: string }) {
+      const res =
+        await Vue.serviceAgent.changePassword(state.currentUser!.userName, oldP, newP);
+      return res;
+    },
   },
 } as Module<{ currentUser: UserComplete | null }, {}>;

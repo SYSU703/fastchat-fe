@@ -81,11 +81,10 @@ export default Vue.extend({
   methods: {
     async changePassword() {
       try {
-        const res = await Vue.serviceAgent.changePassword(
-          this.$store.state.session.currentUser.userName,
-          this.oldP,
-          this.newP,
-        );
+        const res = await this.$store.dispatch('changePassword', {
+          oldP: this.oldP,
+          newP: this.newP,
+        });
         if (res.success) {
           this.$Message.success('修改密码成功');
         }
