@@ -8,6 +8,7 @@ import {
   FriendWithChatInfo,
   messageHasChanged,
   AddFriendRequest,
+  GroupInvitation,
 } from '@/models';
 import vuex from '@/store';
 import MessageWindow from '@/components/MessageWindow.vue';
@@ -70,6 +71,10 @@ export default Vue.extend({
     pendingFriendRequestsToMe(): AddFriendRequest[] {
       return (this.$store.state.friends.pendingRequests as AddFriendRequest[])
         .filter((req) => this.user && req.to === this.user.userName);
+    },
+    pendingGroupInvitationsToMe(): GroupInvitation[] {
+      return (this.$store.state.chats.pendingGroupInvitations as GroupInvitation[])
+        .filter((inv) => this.user && inv.to === this.user.userName);
     },
   },
   watch: {

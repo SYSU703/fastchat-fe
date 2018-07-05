@@ -9,8 +9,7 @@
                       @on-click="onSelectNavItem">
               <a>
                 <Badge dot
-                       :count="pendingFriendRequestsToMe.length"
-                       style="line-height: inherit; vertical-align: inherit;">
+                       :count="pendingFriendRequestsToMe.length+pendingGroupInvitationsToMe.length">
                   <span class="nav-label">通知</span>
                   <!-- <Icon type="ios-bell-outline"
                         size="18" /> -->
@@ -18,8 +17,19 @@
                 </Badge>
               </a>
               <DropdownMenu slot="list">
-                <DropdownItem name="showFriendRequests">好友请求</DropdownItem>
-                <DropdownItem name="showGroupInvitation">群聊邀请</DropdownItem>
+                <DropdownItem name="showFriendRequests">
+                  <Badge dot
+                         :count="pendingFriendRequestsToMe.length">
+                    好友请求
+                  </Badge>
+                </DropdownItem>
+
+                <DropdownItem name="showGroupInvitation">
+                  <Badge dot
+                         :count="pendingGroupInvitationsToMe.length">
+                    群聊邀请
+                  </Badge>
+                </DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
