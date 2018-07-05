@@ -120,6 +120,11 @@ export default {
       const res = await Vue.serviceAgent.responseGroupInvitation(invId, accept);
       return res;
     },
+    async changeGroupChatName({ commit, state }, newChatName: string) {
+      const res
+        = await Vue.serviceAgent.changeGroupChatName(state.currentChat!.chatId, newChatName);
+      return res;
+    },
   },
 } as Module<{
   chats: Map<string, ChatBasic>;

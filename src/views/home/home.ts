@@ -42,6 +42,9 @@ export default Vue.extend({
       showChatMembersModal: false,
       showInviteFriendModal: false,
       showGroupInvitationModal: false,
+      isEditingChatName: false,
+      newChatName: '',
+      changeChatNameLoading: false,
     };
   },
   computed: {
@@ -152,6 +155,19 @@ export default Vue.extend({
         } else {
           this.$Message.error(`修改失败`);
         }
+      }
+    },
+    async changeGroupChatName() {
+      this.changeChatNameLoading = true;
+      try {
+        const res = await this.$store.dispatch('changeGroupChatName', this.newChatName);
+        if (res.success) {
+          this.$Message.success('修改群名成功');
+        }
+      } catch (error) {
+        this.$Message.error('修改群名失败');
+      } finally {
+        this.changeChatNameLoading = false;
       }
     },
   },

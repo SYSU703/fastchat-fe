@@ -184,4 +184,9 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
       { state: accept ? 'accepted' : 'rejected' });
     return res.data;
   }
+
+  public async changeGroupChatName(chatId: string, newChatName: string): Promise<Response<undefined>> {
+    const res = await chatsRS.patch(`${chatId}`, { chatName: newChatName });
+    return res.data;
+  }
 }

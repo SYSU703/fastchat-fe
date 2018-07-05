@@ -75,6 +75,7 @@ interface ChatService {
   postGroupInvitation(friendName: string, chatId: string, message: string): Promise<Response<undefined>>;
   getGroupInvitations(): Promise<Response<GroupInvitation[]>>;
   responseGroupInvitation(invId: string, accept: boolean): Promise<Response<undefined>>;
+  changeGroupChatName(chatId: string, newChatName: string): Promise<Response<undefined>>;
 }
 
 /**

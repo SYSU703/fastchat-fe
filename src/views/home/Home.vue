@@ -67,7 +67,7 @@
           <Menu theme="light"
                 width="auto"
                 :open-names="['friends']"
-                @on-select="$store.dispatch('loadOneChat', $event);">
+                @on-select="$store.dispatch('loadOneChat', $event);isEditingChatName=false;">
             <Submenu name="friends">
               <template slot="title">
                 <Icon type="ios-navigate" /> 好友
@@ -102,9 +102,26 @@
             <h2 v-if="chatInfo&&!chatInfo.isGroup">
               与 {{ membersWithoutMe[0]?membersWithoutMe[0].userName:'' }} 的聊天
             </h2>
-            <h2 v-if="chatInfo && chatInfo.isGroup">
-              {{ chatInfo.chatName }}
-            </h2>
+            <template v-if="chatInfo && chatInfo.isGroup">
+              <h2>{{ chatInfo.chatName }}</h2>
+              <Icon v-if="!isEditingChatName"
+                    size="21"
+                    type="edit"
+                    style="margin-left: 5px;"
+                    @click="newChatName=chatInfo.chatName;isEditingChatName=true;" />
+              <template v-else>
+                <Input class="chat-name-input"
+                       v-model="newChatName"
+                       placeholder="新群聊名称"
+                       :disabled="changeChatNameLoading"></Input>
+                <Button type="primary"
+                        :disabled="!newChatName||newChatName===chatInfo.chatName||changeChatNameLoading"
+                        @click="changeGroupChatName"
+                        :loading="changeChatNameLoading">保存</Button>
+                <Button @click="isEditingChatName=false;"
+                        :disabled="changeChatNameLoading">取消</Button>
+              </template>
+            </template>
             <Dropdown class="chat-dropdown"
                       trigger="click"
                       placement="bottom-end"
