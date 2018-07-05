@@ -14,6 +14,10 @@
 
 
 <style lang="stylus" scoped>
+.group-invitation-modal
+  /deep/ .ivu-modal-footer
+    padding 0
+    border none
 </style>
 
 <script lang="ts">
