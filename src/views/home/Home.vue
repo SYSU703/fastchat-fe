@@ -19,6 +19,7 @@
               </a>
               <DropdownMenu slot="list">
                 <DropdownItem name="showFriendRequests">好友请求</DropdownItem>
+                <DropdownItem name="showGroupInvitation">群聊邀请</DropdownItem>
               </DropdownMenu>
             </Dropdown>
           </div>
@@ -49,6 +50,7 @@
                        :user-info="user"
                        @submitUserInfo="submitUserInfo" />
         <ChangePasswordModal v-model="showChangePasswordModal" />
+        <GroupInvitationModal v-model="showGroupInvitationModal" />
       </Header>
       <Layout class="home-body">
         <Sider class="home-sider">
@@ -101,10 +103,13 @@
                       icon="navicon-round"
                       size="small">更多</Button>
               <DropdownMenu slot="list">
-                <DropdownItem v-if="!chatInfo.isGroup"
-                              name="showFriendInfo">查看好友信息</DropdownItem>
-                <DropdownItem v-else
-                              name="showChatMembers">查看群聊成员</DropdownItem>
+                <template v-if="!chatInfo.isGroup">
+                  <DropdownItem name="showFriendInfo">查看好友信息</DropdownItem>
+                </template>
+                <template v-else>
+                  <DropdownItem name="showChatMembers">查看群聊成员</DropdownItem>
+                  <DropdownItem name="inviteFriend">邀请好友加入</DropdownItem>
+                </template>
               </DropdownMenu>
             </Dropdown>
 
@@ -112,6 +117,7 @@
                            :editable="false"
                            :user-info="membersWithoutMe[0]" />
             <ChatMembersModal v-model="showChatMembersModal" />
+            <InviteFriendModal v-model="showInviteFriendModal" />
           </Content>
 
           <Content class="home-chat-content"

@@ -43,3 +43,16 @@ export interface ChatComplete extends ChatBasic {
   chatMembers: UserComplete[];
   chatMessages: Message[];
 }
+
+export interface GroupInvitation {
+  invId: string;
+  from: string;
+  to: string;
+  chatId: string;
+  chatName: string;
+  time: Date;
+  state: 'rejected' | 'accepted' | 'pending';
+  message: string;
+  fromNickname: string;
+  toNickname: string;
+}

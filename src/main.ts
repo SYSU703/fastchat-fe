@@ -11,8 +11,11 @@ Vue.use(new FastChatSEAgent());
 
 Vue.config.productionTip = false;
 
-new Vue({
+const globalVueInstance = new Vue({
   router,
   store,
   render: (h) => h(App),
 }).$mount('#app');
+
+// iView的Message组件的全局配置
+globalVueInstance.$Message.config({ duration: 5 });

@@ -3,14 +3,17 @@ import {
   ChatBasic,
   ChatComplete,
   chatHasChanged,
+  GroupInvitation,
 } from '@/models';
 import { Module } from 'vuex';
 
 export default {
+  // 新增一个状态以后要记得在resetChat中清空它，登出时会调用resetChat
   state: {
     chats: new Map() as Map<string, ChatBasic>, // 以chatId为key
     chatsChangeTracker: 1,  // https://stackoverflow.com/a/45441321
     currentChat: null as ChatComplete | null,
+    pendingGroupInvitations: [] as GroupInvitation[],
   },
   getters: {
     chatMembersWithoutMe(state, getters, rootState) {
@@ -51,6 +54,10 @@ export default {
         return;
       }
       state.currentChat = { ...newChat };
+    },
+    loadPendingGroupInvitations(state, pendingGroupInvitations: GroupInvitation[] | null) {
+      if (!pendingGroupInvitations) { pendingGroupInvitations = []; }
+      state.pendingGroupInvitations = [...pendingGroupInvitations];
     },
   },
   actions: {
@@ -94,16 +101,29 @@ export default {
           content);
       return messageRes;
     },
-    async resetChat({ state, commit }) {
+    async resetChats({ state, commit }) {
       commit('loadChats', null);
       commit('loadOneChat', null);
+      commit('loadPendingGroupInvitations', null);
     },
     async createGroupChat() {
       const newGroup = await Vue.serviceAgent.createGroupChat();
+    },
+    async getGroupInvitations({ commit }) {
+      const res = await Vue.serviceAgent.getGroupInvitations();
+      commit('loadPendingGroupInvitations',
+        res.data.filter((inv) => inv.state === 'pending'));
+    },
+    async responseGroupInvitation(
+      { commit },
+      { invId, accept }: { invId: string, accept: boolean }) {
+      const res = await Vue.serviceAgent.responseGroupInvitation(invId, accept);
+      return res;
     },
   },
 } as Module<{
   chats: Map<string, ChatBasic>;
   chatsChangeTracker: number;
   currentChat: ChatComplete | null;
+  pendingGroupInvitations: GroupInvitation[];
 }, any>;

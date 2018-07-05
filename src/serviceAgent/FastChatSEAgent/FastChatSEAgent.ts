@@ -6,6 +6,7 @@ import {
   ChatBasic,
   FriendBasic,
   chatListhasChange,
+  GroupInvitation,
 } from '@/models';
 import { ServiceAgent, ServiceAgentVuePlugin, Response } from '@/serviceAgent';
 import {
@@ -34,13 +35,13 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
     this.friendListUpdate = friendListUpdate;
     this.chatListUpdate = chatListUpdate;
     this.oneChatMembersUpdate = oneChatMembersUpdate;
-    this.intervalId = window.setInterval(async () => {
-      const res = await this.getChats();
-      const chats = res.data;
-      if (chatListhasChange(store.state.chats.chats, chats)) {
-        chatListUpdate(chats);
-      }
-    }, 2000);
+    // this.intervalId = window.setInterval(async () => {
+    //   const res = await this.getChats();
+    //   const chats = res.data;
+    //   if (chatListhasChange(store.state.chats.chats, chats)) {
+    //     chatListUpdate(chats);
+    //   }
+    // }, 2000);
   }
 
   public unsubscribeUpdate() {
@@ -158,6 +159,29 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
   public async changePassword(userName: string, oldP: string, newP: string): Promise<Response<undefined>> {
     const res = await usersRS.patch<Response<undefined>>(`${userName}/password`,
       { oldP, newP });
+    return res.data;
+  }
+
+  public async postGroupInvitation(friendName: string, chatId: string, message: string): Promise<Response<undefined>> {
+    const res = await chatsRS.post(`invitations`, {
+      friendName, message, chatId,
+    });
+    return res.data;
+  }
+
+  public async getGroupInvitations(): Promise<Response<GroupInvitation[]>> {
+    const res = await chatsRS.get<Response<GroupInvitation[]>>(`invitations`);
+    for (const req of res.data.data) {
+      // js的timestamp以毫秒为精度，而不是秒
+      req.time = new Date(+(req.time + '000'));
+    }
+    return res.data;
+  }
+
+  public async responseGroupInvitation(invId: string, accept: boolean)
+    : Promise<Response<undefined>> {
+    const res = await chatsRS.patch(`invitations/${invId}`,
+      { state: accept ? 'accepted' : 'rejected' });
     return res.data;
   }
 }

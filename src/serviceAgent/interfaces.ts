@@ -6,6 +6,7 @@ import {
   FriendBasic,
   ChatBasic,
   AddFriendRequest,
+  GroupInvitation,
 } from '@/models';
 import _Vue from 'vue';
 
@@ -71,6 +72,9 @@ interface ChatService {
   getChatMembers(chatId: string): Promise<Response<UserComplete[]>>;
   sendMessage(chatId: string, from: string, content: string): Promise<Response<Message>>;
   createGroupChat(): Promise<Response<ChatBasic>>;
+  postGroupInvitation(friendName: string, chatId: string, message: string): Promise<Response<undefined>>;
+  getGroupInvitations(): Promise<Response<GroupInvitation[]>>;
+  responseGroupInvitation(invId: string, accept: boolean): Promise<Response<undefined>>;
 }
 
 /**

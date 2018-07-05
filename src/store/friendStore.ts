@@ -15,13 +15,12 @@ export default {
     friendsAndPrivateChats(state, getters, rootState): FriendWithChatInfo[] {
       // 访问tracker使得这个getter依赖于它
       // 从而tracker改变就会触发getter更新
-      if (!Number.isSafeInteger(state.friendsChangeTracker) ||
-        !Number.isSafeInteger(rootState.chats.chatsChangeTracker)) {
+      if (!Number.isSafeInteger(rootState.chats.chatsChangeTracker)) {
         throw new Error(`ChangeTracker超出范围`);
       }
       const result = [];
-      const friendsArr = Array.from(state.friends);
-      for (const [key, friend] of friendsArr) {
+      const friendsArr = getters.friendsArr;
+      for (const friend of friendsArr) {
         const chat = rootState.chats.chats.get(friend.chatId);
         if (!chat) {
           // ${friend.userName}没有对应的私聊，暂时不返回这个好友的相关信息
@@ -30,6 +29,12 @@ export default {
         result.push({ friendInfo: friend, chatInfo: chat });
       }
       return result;
+    },
+    friendsArr(state, getters, rootState): FriendBasic[] {
+      if (!Number.isSafeInteger(state.friendsChangeTracker)) {
+        throw new Error(`ChangeTracker超出范围`);
+      }
+      return Array.from(state.friends).map(([userName, friend]) => friend);
     },
   },
   mutations: {
@@ -70,7 +75,7 @@ export default {
     async responseFriendRequest({ commit }, { reqId, accept }: { reqId: string, accept: boolean }) {
       const res = await Vue.serviceAgent.responseFriendRequest(reqId, accept);
       if (res.success) { commit('delOneFriendRequest', reqId); }
-      return res.success;
+      return res;
     },
   },
 } as Module<{

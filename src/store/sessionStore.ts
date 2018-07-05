@@ -27,6 +27,7 @@ export default {
       dispatch('getFriends');
       dispatch('subscribeChanges');
       dispatch('getFriendRequests');
+      dispatch('getGroupInvitations');
       return res;
     },
     async logout({ state, commit, dispatch }) {
@@ -36,7 +37,7 @@ export default {
       }
       commit('userChange', null);
       dispatch('resetFriends');
-      dispatch('resetChat');
+      dispatch('resetChats');
       dispatch('unSubscribeChanges');
       return res;
     },
@@ -50,6 +51,7 @@ export default {
         dispatch('getFriends');
         dispatch('subscribeChanges');
         dispatch('getFriendRequests');
+        dispatch('getGroupInvitations');
         return resumedUser;
       } else {
         return state.currentUser;
