@@ -6,9 +6,6 @@ export default {
   state: {
     currentUser: null as UserComplete | null,
   },
-  getters: {
-
-  },
   mutations: {
     userChange(state, newUser: UserComplete | null): void {
       if (newUser == null || typeof newUser !== 'object' || !newUser.userName) {
@@ -22,12 +19,8 @@ export default {
     async login({ dispatch, commit }, credentials: LoginCredentials) {
       const res = await Vue.serviceAgent.login(credentials);
       commit('userChange', res.data);
-      // 登陆成功以后获取好友列表和聊天列表
-      dispatch('getChats');
-      dispatch('getFriends');
+      dispatch('refreshAllData');
       dispatch('subscribeChanges');
-      dispatch('getFriendRequests');
-      dispatch('getGroupInvitations');
       return res;
     },
     async logout({ state, commit, dispatch }) {
@@ -36,8 +29,8 @@ export default {
         throw new Error('登出失败');
       }
       commit('userChange', null);
-      dispatch('resetFriends');
-      dispatch('resetChats');
+      dispatch('clearFriends');
+      dispatch('clearChats');
       dispatch('unSubscribeChanges');
       return res;
     },
@@ -46,16 +39,22 @@ export default {
         const resumedUser = Vue.serviceAgent.tryResumeSession();
         if (!resumedUser) { return null; }
         commit('userChange', resumedUser);
-        // 登陆成功以后获取好友列表和聊天列表
-        dispatch('getChats');
-        dispatch('getFriends');
+        dispatch('refreshAllData');
         dispatch('subscribeChanges');
-        dispatch('getFriendRequests');
-        dispatch('getGroupInvitations');
         return resumedUser;
       } else {
         return state.currentUser;
       }
+    },
+    refreshAllData({ dispatch, rootState }) {
+      dispatch('getChats');
+      const currentChat = rootState.chats.currentChat;
+      if (currentChat) {
+        dispatch('getOneChat', currentChat.chatId);
+      }
+      dispatch('getFriends');
+      dispatch('getFriendRequests');
+      dispatch('getGroupInvitations');
     },
     subscribeChanges({ commit, dispatch }) {
       Vue.serviceAgent.subscribeUpdate(
@@ -68,19 +67,25 @@ export default {
     unSubscribeChanges() {
       Vue.serviceAgent.unsubscribeUpdate();
     },
-    async changeUserInfo({ commit }, info: UserComplete) {
+    async changeUserInfo({ state, commit }, info: UserComplete) {
+      if (!state.currentUser || state.currentUser.userName !== info.userName) {
+        throw new Error(`尚未登陆/不能修改他人的信息`);
+      }
       const res = await Vue.serviceAgent.changeUserInfo(info);
       if (res.success) {
-        commit('userChange', info);
+        commit('userChange', Object.assign({}, state.currentUser, info));
       }
       return res;
     },
     async changePassword(
       { state },
       { oldP, newP }: { oldP: string, newP: string }) {
+      if (!state.currentUser) {
+        throw new Error(`尚未登陆`);
+      }
       const res =
-        await Vue.serviceAgent.changePassword(state.currentUser!.userName, oldP, newP);
+        await Vue.serviceAgent.changePassword(state.currentUser.userName, oldP, newP);
       return res;
     },
   },
-} as Module<{ currentUser: UserComplete | null }, {}>;
+} as Module<{ currentUser: UserComplete | null }, any>;

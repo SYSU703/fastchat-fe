@@ -61,7 +61,9 @@
 <script lang="ts">
 import Vue from 'vue';
 import { UserComplete } from '@/models';
+import { Response } from '@/serviceAgent';
 import { debounce } from '@/utils';
+import { AxiosError } from 'axios';
 
 export default Vue.extend({
   name: 'AddFriendModal',
@@ -90,24 +92,26 @@ export default Vue.extend({
     }, 300);
   },
   methods: {
-    sendFriendReq() {
-      this.addFriendUserNames.forEach(async (name: string) => {
-        try {
-          const res = await this.$serviceAgent.requestAddFriend(
-            name,
-            this.friendReqMsg,
+    async sendFriendReq() {
+      const ress: Array<
+        Response<undefined> | AxiosError // eslint-disable-line indent
+      > = await this.$store.dispatch('requestAddFriends', {
+        names: this.addFriendUserNames,
+        msg: this.friendReqMsg,
+      });
+      ress.forEach((res, index) => {
+        if (res instanceof Error && res.response && res.response.data) {
+          this.$Message.error(
+            `${this.addFriendUserNames[index]} 的好友请求发送失败：${
+              res.response.data.msg
+            }`,
           );
-          if (res.success === true) {
-            this.$Message.success(`${name} 的好友请求发送成功`);
-          }
-        } catch (error) {
-          if (error.response.data) {
-            this.$Message.error(
-              `${name} 的好友请求发送失败：${error.response.data.msg}`,
-            );
-          } else {
-            throw error;
-          }
+        } else if ((res as any).success === true) {
+          this.$Message.success(
+            `${this.addFriendUserNames[index]} 的好友请求发送成功`,
+          );
+        } else {
+          throw res;
         }
       });
     },

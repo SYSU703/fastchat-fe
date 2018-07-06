@@ -20,8 +20,9 @@ export default {
       }
       const result = [];
       const friendsArr = getters.friendsArr;
+      const chatsMap = rootState.chats.chats;
       for (const friend of friendsArr) {
-        const chat = rootState.chats.chats.get(friend.chatId);
+        const chat = chatsMap.get(friend.chatId);
         if (!chat) {
           // ${friend.userName}没有对应的私聊，暂时不返回这个好友的相关信息
           continue;
@@ -63,7 +64,7 @@ export default {
     async updateFriends({ commit }, friends) {
       commit('loadFriends', friends);
     },
-    async resetFriends({ commit }) {
+    async clearFriends({ commit }) {
       commit('loadFriends', null);
       commit('loadPendingFriendRequests', null);
     },
@@ -72,10 +73,18 @@ export default {
       commit('loadPendingFriendRequests',
         res.data.filter((req) => req.state === 'pending'));
     },
-    async responseFriendRequest({ commit }, { reqId, accept }: { reqId: string, accept: boolean }) {
+    async responseFriendRequest({ dispatch }, { reqId, accept }: { reqId: string, accept: boolean }) {
       const res = await Vue.serviceAgent.responseFriendRequest(reqId, accept);
-      if (res.success) { commit('delOneFriendRequest', reqId); }
+      dispatch('getFriendRequests');
       return res;
+    },
+    async requestAddFriends({ dispatch }, { names, msg }: { names: string[], msg: string }) {
+      const ress = await Promise.all(names.map(async (name) =>
+        Vue.serviceAgent.requestAddFriend(name, msg)
+          .catch((err) => err)),
+      );
+      dispatch('getFriendRequests');
+      return ress;
     },
   },
 } as Module<{

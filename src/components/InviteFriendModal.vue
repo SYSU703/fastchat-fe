@@ -55,6 +55,8 @@
 <script lang="ts">
 import Vue from 'vue';
 import { FriendBasic, UserComplete, ChatComplete } from '@/models';
+import { Response } from '@/serviceAgent';
+import { AxiosError } from 'axios';
 
 export default Vue.extend({
   name: 'InviteFriendModal',
@@ -97,30 +99,34 @@ export default Vue.extend({
     ) {
       this.targetKeys = newTargetKeys;
     },
-    sendInvitation() {
-      this.targetKeys.forEach(async friendName => {
-        try {
-          const res = await this.$serviceAgent.postGroupInvitation(
-            friendName,
-            this.chatInfo.chatId,
-            this.message,
-          );
-        } catch (error) {
-          if (error.response && error.response.data.msg) {
-            const msg = error.response.data.msg;
-            switch (msg) {
-              case 'receiver already in the group':
-                this.$Message.error(`用户${friendName}已经在该群聊中`);
-                break;
-              case 'invitation exists':
-                this.$Message.info(`已经有人邀请${friendName}加入该群`);
-                break;
-              default:
-                throw error;
-            }
-          } else {
-            throw error;
+    async sendInvitation() {
+      const ress: Array<
+        Response<undefined> | AxiosError // eslint-disable-line indent
+      > = await this.$store.dispatch('postGroupInvitations', {
+        names: this.targetKeys,
+        msg: this.message,
+      });
+      ress.forEach((res, index) => {
+        if (res instanceof Error && res.response && res.response.data) {
+          const msg = res.response.data.msg;
+          switch (msg) {
+            case 'receiver already in the group':
+              this.$Message.error(
+                `用户${this.targetKeys[index]}已经在该群聊中`,
+              );
+              break;
+            case 'invitation exists':
+              this.$Message.info(
+                `已经有人邀请${this.targetKeys[index]}加入该群`,
+              );
+              break;
+            default:
+              throw res;
           }
+        } else if ((res as any).success === true) {
+          this.$Message.success(`${this.targetKeys[index]}的群聊邀请发送成功`);
+        } else {
+          throw res;
         }
       });
     },

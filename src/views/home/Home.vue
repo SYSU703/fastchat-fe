@@ -67,7 +67,7 @@
           <Menu theme="light"
                 width="auto"
                 :open-names="['friends']"
-                @on-select="$store.dispatch('loadOneChat', $event);isEditingChatName=false;">
+                @on-select="$store.dispatch('getOneChat', $event);isEditingChatName=false;">
             <Submenu name="friends">
               <template slot="title">
                 <Icon type="ios-navigate" /> 好友

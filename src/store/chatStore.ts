@@ -62,34 +62,37 @@ export default {
   },
   actions: {
     async getChats({ commit, dispatch }) {
-      const chats = await Vue.serviceAgent.getChats();
-      commit('loadChats', chats.data);
+      const res = await Vue.serviceAgent.getChats();
+      await dispatch('updateChats', res.data);
     },
     async updateChats({ commit, state, dispatch }, chats: ChatBasic[]) {
       const oldChat = state.currentChat;
       let shouldUpdateCurrentChat = false;
+      commit('loadChats', chats);
       if (oldChat) {
-        for (const chat of chats) {
-          if (chat.chatId === oldChat.chatId && chatHasChanged(oldChat, chat)) {
-            shouldUpdateCurrentChat = true;
-            break;
-          }
+        const currentChat = state.chats.get(oldChat.chatId);
+        if (!currentChat) {
+          // 当前加载的群聊已经消失
+          commit('loadOneChat', null);
+        }
+        if (currentChat && chatHasChanged(oldChat, currentChat)) {
+          shouldUpdateCurrentChat = true;
+        }
+        if (shouldUpdateCurrentChat) {
+          dispatch('getOneChat', oldChat.chatId);
         }
       }
-      commit('loadChats', chats);
-      if (shouldUpdateCurrentChat) {
-        dispatch('loadOneChat', oldChat!.chatId);
-      }
     },
-    async loadOneChat({ state, commit }, chatId: string) {
+    async getOneChat({ state, commit }, chatId: string) {
       let chat = state.chats.get(chatId) as ChatComplete;
       if (!chat) {
         throw new Error(`chatId ${chatId} 不存在`);
       }
       chat = { ...chat };
-      const membersRes = await Vue.serviceAgent.getChatMembers(chatId);
+      const [membersRes, messagesRes]
+        = await Promise.all([Vue.serviceAgent.getChatMembers(chatId),
+        Vue.serviceAgent.getChatMessages(chatId)]);
       chat.chatMembers = membersRes.data;
-      const messagesRes = await Vue.serviceAgent.getChatMessages(chatId);
       chat.chatMessages = messagesRes.data;
       commit('loadOneChat', chat);
     },
@@ -99,30 +102,46 @@ export default {
         = await Vue.serviceAgent.sendMessage(state.currentChat.chatId,
           rootState.session.currentUser.userName,
           content);
+      dispatch('getChats');
       return messageRes;
     },
-    async resetChats({ state, commit }) {
+    async clearChats({ state, commit }) {
       commit('loadChats', null);
       commit('loadOneChat', null);
       commit('loadPendingGroupInvitations', null);
     },
-    async createGroupChat() {
+    async createGroupChat({ dispatch }) {
       const newGroup = await Vue.serviceAgent.createGroupChat();
+      dispatch('getChats');
     },
     async getGroupInvitations({ commit }) {
       const res = await Vue.serviceAgent.getGroupInvitations();
       commit('loadPendingGroupInvitations',
         res.data.filter((inv) => inv.state === 'pending'));
     },
+    async postGroupInvitations(
+      { dispatch, state },
+      { names, msg }: { names: string[], msg: string }) {
+      const ress = Promise.all(names.map((name) =>
+        Vue.serviceAgent
+          .postGroupInvitation(name, state.currentChat!.chatId, msg)
+          .catch((err) => err)),
+      );
+      dispatch('getGroupInvitations');
+      return ress;
+    },
     async responseGroupInvitation(
-      { commit },
+      { dispatch },
       { invId, accept }: { invId: string, accept: boolean }) {
       const res = await Vue.serviceAgent.responseGroupInvitation(invId, accept);
+      dispatch('getChats');
+      dispatch('getGroupInvitations');
       return res;
     },
-    async changeGroupChatName({ commit, state }, newChatName: string) {
+    async changeGroupChatName({ dispatch, state }, newChatName: string) {
       const res
         = await Vue.serviceAgent.changeGroupChatName(state.currentChat!.chatId, newChatName);
+      dispatch('getChats');
       return res;
     },
   },
