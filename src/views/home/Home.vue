@@ -63,11 +63,13 @@
         <GroupInvitationModal v-model="showGroupInvitationModal" />
       </Header>
       <Layout class="home-body">
-        <Sider class="home-sider">
+        <Sider class="home-sider"
+               ref="scrollbarContainer">
           <Menu theme="light"
                 width="auto"
-                :open-names="['friends']"
-                @on-select="$store.dispatch('getOneChat', $event);isEditingChatName=false;">
+                :open-names="['friends', 'groups']"
+                @on-select="$store.dispatch('getOneChat', $event);isEditingChatName=false;"
+                @on-open-change="updateSidebarScroller">
             <Submenu name="friends">
               <template slot="title">
                 <Icon type="ios-navigate" /> 好友

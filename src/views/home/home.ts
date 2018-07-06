@@ -1,6 +1,6 @@
 import Vue from 'vue';
+import PerfectScrollbar from 'perfect-scrollbar';
 import {
-  LoginCredentials,
   UserComplete,
   Message,
   ChatBasic,
@@ -45,6 +45,8 @@ export default Vue.extend({
       isEditingChatName: false,
       newChatName: '',
       changeChatNameLoading: false,
+      sidebarScroller: null as PerfectScrollbar | null,
+      resizeHandler: null as (() => void) | null,
     };
   },
   computed: {
@@ -97,6 +99,28 @@ export default Vue.extend({
         });
       }
     },
+    friendList(newVal, oldVal) {
+      this.updateSidebarScroller();
+    },
+    groupChats(newVal, oldVal) {
+      this.updateSidebarScroller();
+    },
+  },
+  mounted() {
+    const PScontainer = (this.$refs.scrollbarContainer as any).$el;
+    this.sidebarScroller = new PerfectScrollbar(PScontainer);
+    this.updateSidebarScroller();
+    this.resizeHandler = () => {
+      this.updateSidebarScroller();
+    };
+    window.addEventListener('resize', this.resizeHandler);
+  },
+  beforeDestroy() {
+    // 防止内存泄露
+    this.sidebarScroller!.destroy();
+    this.sidebarScroller = null;
+    window.removeEventListener('resize', this.resizeHandler!);
+    this.resizeHandler = null;
   },
   methods: {
     onSelectNavItem(name: string) {
@@ -168,7 +192,13 @@ export default Vue.extend({
         this.$Message.error('修改群名失败');
       } finally {
         this.changeChatNameLoading = false;
+        this.isEditingChatName = false;
       }
+    },
+    updateSidebarScroller() {
+      setTimeout(() => {
+        this.sidebarScroller!.update();
+      }, 300);
     },
   },
   async beforeRouteEnter(to, from, next) {

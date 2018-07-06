@@ -4,6 +4,7 @@ import router from './router';
 import store from './store';
 import iView from 'iview';
 import 'iview/dist/styles/iview.css';
+import 'perfect-scrollbar/css/perfect-scrollbar.css';
 import { FastChatSEAgent } from '@/serviceAgent/FastChatSEAgent';
 
 Vue.use(iView);
