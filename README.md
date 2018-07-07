@@ -14,9 +14,14 @@ FastChat 是一款基于 Web 开发的即时通讯系统，它主打以下三个
 * 现代化的构建工具：@vue/cli (webpack + vue-loader + ts-loader + babel-loader + ……)。
 <!-- TODO: 需要写一篇文章来解释这些开发工具是如何work的，webpack中的config也需要解释 -->
 
-`fastchat-fe`将会把数据通讯层实现为抽象层。这样，开发者只需要实现通讯层的接口，就可以把`fastchat-fe`配合其他即时通讯系统后端使用。
+`fastchat-fe`把数据通讯逻辑解耦为抽象类。这样，开发者只需要实现通讯层的接口，就可以把`fastchat-fe`移植到其他即时通讯系统后端使用。
+
+## 设计文档
+[Design Doc](./DesignDoc.md)
 
 ## 开发命令
+**serve或build之前修改`/src/constants/index.ts`中的`SERVER_ADDR`常量，使它指向正确的服务端地址。**
+
 安装依赖：
 ```bash
 yarn install
@@ -27,8 +32,25 @@ yarn install
 yarn serve
 ```
 
-构建容器：
+构建镜像：
 ```bash
-docker build -f ./fastchat_fe.dockerfile .
+docker build -t fastchatfe -f ./fastchat_fe.dockerfile .
 ```
 
+运行容器：
+```bash
+docker run -it --name my-fastchat-fe -p 80:80 fastchatfe
+```
+
+除了手动构建和运行容器以外，你还可以将这个dockerfile用于docker-compose.yml，比如像[fastchat-se](https://github.com/csr632/fastchat-se/blob/3a4aad8a53aae15399ba98d47f66c8514efe7767/docker-compose-production.yml#L29)，这样你就可以通过`docker-compose up`一个命令来启动所有需要的服务容器了。
+
+
+<!-- ****
+## TODO
+* 为每种数据模型（比如chat）增加extra:any字段，用于存储特定服务端需要的数据（前端不需要，但服务端需要），调用agent的函数时将extra信息一并提供，让使用者更容易实现agent
+* 全局错误捕获和处理
+* 增强群管理员的功能：删除成员、转移管理员、发布公告等
+* 所有数据获取API使用节流化
+* 删除好友
+* 新消息提醒
+* 显示消息时间 -->
