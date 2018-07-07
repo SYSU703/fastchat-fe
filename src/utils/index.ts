@@ -13,6 +13,9 @@ export function debounce(fn: (...args: any[]) => any, time: number) {
 }
 
 export function formatDateTime(d: Date) {
+  if (d.toString() === 'Invalid Date') {
+    return '';
+  }
   const datestring =
     d.getFullYear() +
     '-' +

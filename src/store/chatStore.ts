@@ -122,7 +122,7 @@ export default {
     async postGroupInvitations(
       { dispatch, state },
       { names, msg }: { names: string[], msg: string }) {
-      const ress = Promise.all(names.map((name) =>
+      const ress = await Promise.all(names.map((name) =>
         Vue.serviceAgent
           .postGroupInvitation(name, state.currentChat!.chatId, msg)
           .catch((err) => err)),
