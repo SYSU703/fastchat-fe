@@ -11,9 +11,7 @@ import {
   GroupInvitation,
   Message,
 } from '@/models';
-
-// const SERVER_ADDR = 'http://192.168.199.213:8080';
-const SERVER_ADDR = 'http://192.168.199.119:8080';
+import { SERVER_ADDR } from '@/constants';
 
 export class SE703Agent extends ServiceAgentVuePlugin implements ServiceAgent {
   private userName: string = '';
