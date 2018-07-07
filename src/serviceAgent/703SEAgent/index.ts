@@ -323,6 +323,11 @@ export class SE703Agent extends ServiceAgentVuePlugin implements ServiceAgent {
     if (res.data.result !== 'success') {
       throw new Error('失败');
     } else {
+      const s = window.sessionStorage.getItem('703SEuser');
+      if (!s) { throw new Error('sessionStorage中没有用户'); }
+      const user: UserComplete = JSON.parse(s);
+      Object.assign(user, info);
+      window.sessionStorage.setItem('703SEuser', JSON.stringify(user));
       return { success: true, msg: 'ok', data: undefined };
     }
   }
@@ -341,7 +346,7 @@ export class SE703Agent extends ServiceAgentVuePlugin implements ServiceAgent {
   public async postGroupInvitation(friendName: string, chatId: string, message: string): Promise<Response<undefined>> {
     const [isGroup, id] = JSON.parse(chatId);
     const res = await axios.post(`${SERVER_ADDR}/Chat/SendGroupInvite`, {
-      username: this.userName, groupid: id,
+      username: friendName, groupid: id,
     });
     if (res.data.result !== 'success') {
       throw new Error('失败');
@@ -364,7 +369,19 @@ export class SE703Agent extends ServiceAgentVuePlugin implements ServiceAgent {
   public async  changeGroupChatName(chatId: string, newChatName: string): Promise<Response<undefined>> {
     const [isGroup, id] = JSON.parse(chatId);
     const res = await axios.post(`${SERVER_ADDR}/Chat/ModifyGroup`, {
-      groupid: id, grounpname: newChatName,
+      groupid: id, groupname: newChatName,
+    });
+    if (res.data.result !== 'success') {
+      throw new Error('失败');
+    } else {
+      return { success: true, msg: 'ok', data: undefined };
+    }
+  }
+
+  public async deleteGroupMember(chatId: string, userName: string): Promise<Response<undefined>> {
+    const [isGroup, id] = JSON.parse(chatId);
+    const res = await axios.post(`${SERVER_ADDR}/Chat/QuitGroup`, {
+      groupid: id, username: userName,
     });
     if (res.data.result !== 'success') {
       throw new Error('失败');
