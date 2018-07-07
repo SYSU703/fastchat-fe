@@ -6,9 +6,11 @@ import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 import 'perfect-scrollbar/css/perfect-scrollbar.css';
 import { FastChatSEAgent } from '@/serviceAgent/FastChatSEAgent';
+// import { SE703Agent } from '@/serviceAgent/703SEAgent';
 
 Vue.use(iView);
 Vue.use(new FastChatSEAgent());
+// Vue.use(new SE703Agent());
 
 Vue.config.productionTip = false;
 
