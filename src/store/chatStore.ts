@@ -142,6 +142,14 @@ export default {
       const res
         = await Vue.serviceAgent.changeGroupChatName(state.currentChat!.chatId, newChatName);
       dispatch('getChats');
+      dispatch('getGroupInvitations');
+      return res;
+    },
+    async quitGroup({ dispatch, state, rootState }) {
+      const res = await Vue.serviceAgent
+        .deleteGroupMember(state.currentChat!.chatId, rootState.session.currentUser.userName);
+      dispatch('getChats');
+      dispatch('getGroupInvitations');
       return res;
     },
   },

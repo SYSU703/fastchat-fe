@@ -189,4 +189,9 @@ export class FastChatSEAgent extends ServiceAgentVuePlugin implements ServiceAge
     const res = await chatsRS.patch(`${chatId}`, { chatName: newChatName });
     return res.data;
   }
+
+  public async deleteGroupMember(chatId: string, userName: string): Promise<Response<undefined>> {
+    const res = await chatsRS.delete(`${chatId}/members/${userName}`);
+    return res.data;
+  }
 }

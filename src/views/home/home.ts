@@ -155,6 +155,9 @@ export default Vue.extend({
         case 'inviteFriend':
           this.showInviteFriendModal = true;
           break;
+        case 'quitGroup':
+          this.confirmQuitGroup();
+          break;
         default:
           break;
       }
@@ -199,6 +202,15 @@ export default Vue.extend({
       setTimeout(() => {
         this.sidebarScroller!.update();
       }, 300);
+    },
+    confirmQuitGroup() {
+      this.$Modal.confirm({
+        title: '退出群聊',
+        content: `确定要退出群聊${this.chatInfo!.chatName}吗？`,
+        onOk: () => {
+          this.$store.dispatch('quitGroup');
+        },
+      });
     },
   },
   async beforeRouteEnter(to, from, next) {

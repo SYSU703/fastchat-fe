@@ -138,6 +138,7 @@
                 <template v-else>
                   <DropdownItem name="showChatMembers">查看群聊成员</DropdownItem>
                   <DropdownItem name="inviteFriend">邀请好友加入</DropdownItem>
+                  <DropdownItem name="quitGroup">退出群聊</DropdownItem>
                 </template>
               </DropdownMenu>
             </Dropdown>
