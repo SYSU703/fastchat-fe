@@ -14,7 +14,7 @@ FastChat 是一款基于 Web 开发的即时通讯系统，它主打以下三个
 * 现代化的构建工具：@vue/cli (webpack + vue-loader + ts-loader + babel-loader + ……)。
 <!-- TODO: 需要写一篇文章来解释这些开发工具是如何work的，webpack中的config也需要解释 -->
 
-`fastchat-fe`把数据通讯逻辑解耦为抽象类。这样，开发者只需要实现通讯层的接口，就可以把`fastchat-fe`移植到其他即时通讯系统后端使用。
+`fastchat-fe`把数据通讯逻辑解耦为抽象类。这样，开发者只需要实现通讯层的接口，就可以把`fastchat-fe`移植到其他即时通讯系统后端使用。目前`fastchat-fe`已经兼容了[fastchat-se](https://github.com/csr632/fastchat-se)和[703-se](https://github.com/SYSU703/fastchat-se)两套完全不同的服务端。
 
 ## 设计文档
 [Design Doc](./DesignDoc.md)
