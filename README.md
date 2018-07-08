@@ -44,6 +44,13 @@ docker run -it --name my-fastchat-fe -p 80:80 fastchatfe
 
 除了手动构建和运行容器以外，你还可以将这个dockerfile用于docker-compose.yml，比如像[fastchat-se](https://github.com/csr632/fastchat-se/blob/3a4aad8a53aae15399ba98d47f66c8514efe7767/docker-compose-production.yml#L29)，这样你就可以通过`docker-compose up`一个命令来启动所有需要的服务容器了。
 
+## 运行截图
+注册登陆：
+![注册登陆](/doc_images/register.gif)
+好友功能：
+![好友功能](/doc_images/friend.gif)
+群聊功能：
+![群聊功能](/doc_images/group.gif)
 
 <!-- ****
 ## TODO
