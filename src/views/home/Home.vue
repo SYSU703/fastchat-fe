@@ -102,7 +102,7 @@
 
           <Content class="home-chat-header">
             <h2 v-if="chatInfo&&!chatInfo.isGroup">
-              与 {{ membersWithoutMe[0]?membersWithoutMe[0].userName:'' }} 的聊天
+              与 {{ membersWithoutMe[0]?membersWithoutMe[0].nickname:'' }} 的聊天
             </h2>
             <template v-if="chatInfo && chatInfo.isGroup">
               <h2>{{ chatInfo.chatName }}</h2>

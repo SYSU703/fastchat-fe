@@ -4,7 +4,7 @@
          :key="message.messageId"
          :class="{ isMyMessage: myUserName===message.from }"
          class="message-row">
-      {{ myUserName===message.from?'我':message.from }}：
+      {{ myUserName===message.from?'我':message.fromNickname }}：
       <div class="message-box">{{ message.content }}</div>
     </div>
   </Card>

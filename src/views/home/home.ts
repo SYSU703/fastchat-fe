@@ -163,11 +163,11 @@ export default Vue.extend({
       }
     },
     async onInputKeydown(event: KeyboardEvent) {
-      if (!this.chatInput) {
-        this.$Message.info('请发送有内容的消息');
-        return;
-      }
       if (event.keyCode === 13 && event.ctrlKey) {
+        if (!this.chatInput) {
+          this.$Message.info('请发送有内容的消息');
+          return;
+        }
         await this.$store.dispatch('sendMessage', this.chatInput);
         this.chatInput = '';
       }

@@ -76,6 +76,8 @@ export default {
     async responseFriendRequest({ dispatch }, { reqId, accept }: { reqId: string, accept: boolean }) {
       const res = await Vue.serviceAgent.responseFriendRequest(reqId, accept);
       dispatch('getFriendRequests');
+      dispatch('getChats');
+      dispatch('getFriends');
       return res;
     },
     async requestAddFriends({ dispatch }, { names, msg }: { names: string[], msg: string }) {
