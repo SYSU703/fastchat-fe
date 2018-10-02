@@ -1,6 +1,7 @@
 {
   "vetur.format.defaultFormatter.html": "js-beautify-html",
   // use eslint and eslint-plugin-vue instead
+  // https://github.com/vuejs/vetur/blob/master/docs/linting-error.md
   "vetur.validation.template": false,
   "eslint.packageManager": "yarn",
   "eslint.validate": [
@@ -9,15 +10,17 @@
     {
       "language": "vue",
       "autoFix": true
-    },
+    }
   ],
   "vetur.format.defaultFormatterOptions": {
     "js-beautify-html": {
       "wrap_attributes": "force-aligned"
-    },
+    }
   },
+  // vetur use stylusSupremacy to format <style lang="stylus">
+  // https://github.com/vuejs/vetur/blob/master/docs/formatting.md
   "stylusSupremacy.insertBraces": false,
   "stylusSupremacy.insertColons": false,
   "stylusSupremacy.insertSemicolons": false,
-  "tslint.autoFixOnSave": true,
+  "tslint.autoFixOnSave": true
 }
