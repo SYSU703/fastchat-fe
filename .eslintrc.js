@@ -3,10 +3,11 @@ module.exports = {
         "browser": true,
         "es6": true
     },
+    // https://github.com/vuejs/vetur/blob/master/docs/linting-error.md#linting-for-template
+    // https://github.com/vuejs/vue-cli/issues/970
     "extends": [
         "eslint:recommended",
-        "plugin:vue/recommended",
-        "@vue/typescript"
+        "plugin:vue/recommended"
     ],
     "parserOptions": {
         "sourceType": "module"
