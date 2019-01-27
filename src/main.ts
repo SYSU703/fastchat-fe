@@ -17,7 +17,7 @@ Vue.config.productionTip = false;
 const globalVueInstance = new Vue({
   router,
   store,
-  render: (h) => h(App),
+  render: h => h(App),
 }).$mount('#app');
 
 // iView的Message组件的全局配置

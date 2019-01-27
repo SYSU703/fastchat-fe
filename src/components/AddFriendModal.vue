@@ -79,7 +79,7 @@ export default Vue.extend({
       queryUserLoading: false,
       addFriendUserNames: [] as string[],
       friendReqMsg: '',
-      debouncedQueryUser: () => {},
+      debouncedQueryUser: null as any,
       queryUserResult: [] as UserComplete[],
     };
   },

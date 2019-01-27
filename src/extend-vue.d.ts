@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue from 'vue';
 import { ServiceAgent } from '@/serviceAgent';
 
 declare module 'vue/types/vue' {
